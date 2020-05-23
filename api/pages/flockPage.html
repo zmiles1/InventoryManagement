@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content = "width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content = "IE=edge">
+		<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+		<script type='text/javascript' src='main.js'></script>
+		<title>Simply Fowl | Flock Manager</title>
+
+		<!-- Bootstrap CSS CDN -->
+		<link rel="stylesheet"
+	href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+ integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+ crossorigin="anonymous"> 
+
+		<!-- Our Custom CSS -->
+		<link rel="stylesheet" href="style.css">
+
+		<!-- Font Awesome JS --!>
+	  <script src="https://kit.fontawesome.com/412b07d0f6.js" crossorigin="anonymous"></script>
+
+	  <!--Cookies -->
+	  <script src="docCookies.js"></script>
+	  <script src="script.js"></script>
+	</head>
+	<body onload="startup()">
+		<div class="wrapper">        
+			<!--Sidebar--!>
+	   <div>
+	   <nav id="sidebar" class="fixed">
+	   <div class="sidebar-header"><h3 class="text-center">Simply Fowl</h3></div>
+	   <ul class="list-unstyled components">
+	   <li><a href="FlockManager.html"><i class="fas fa-home fa-fw"></i> Home</a></li>
+	   <li class="active"><a href="flockPage.html"><i class="fas fa-feather fa-fw"></i> Manage Flocks</a></li>
+	   <li><a href="farmPage.html"><i class="fas fa-tractor fa-fw"></i> Manage Farms </a></li>
+	   <li id="adminsub">
+                                        <a href="#adminSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                                        <i class="fas fa-user-cog fa-fw"></i> Admin</a>
+                                        <ul class="collapse list-unstyled" id="adminSubmenu">
+                                                <li><a href="saleshomepage.html">Sales Homepage</a></li>
+                                                <li><a href="accountsmanagement.html">Manage Accounts</a></li>
+                                        </ul>
+                                </li>
+		    <li><a href="changePassword.html"><i class="fas fa-cog fa-fw"></i> Change Password </a></li>
+	   </ul>
+	   </nav>
+	   </div>																								           <!--page content-->											
+	   <div id="content">
+		   <!-- Page Header Navbar -->
+		   <nav class="navbar navbar-expand-lg navbar-light bg-light">
+			   <div class="container-fluid">
+				   <button type="button" id="sidebarCollapse" class="btn"><i class="fas fa-bars"></i></button>
+				   <h4 class="nav navbar-nav navbar-center">Manage Flocks</h4>																			   <ul class="nav navbar-nav navbar-right">
+					   <li><button type="button" class="btn btn-primary" onclick="logout()">Log Out</a></li>
+				   </ul>
+			   </div>
+		   </nav>
+
+		   <!--flock info box--!>
+	     <div class="card">
+	     <div class="card-body">
+	     <h5 class="card-title">Available Flocks</h5>
+
+	     <!--dropdown--!>
+	      <select id="farm" class="farmList"></select>
+	      <br><br>
+	      <div>
+	      <button class="btn btn-primary pull-right m-b-15px showFlockTable"><i class="fas fa-info-circle"></i> Show All Flocks</button>
+	      </div>
+	      <!--flock info--!>
+	       <p class="card-text"></p>
+	       <div id="flockInfo"></div>
+	       </div>
+	       </div>
+	       <br>	
+
+	       <!--add flock box--!>
+		<div class="card">
+		<div class="card-body">
+		<h5 class="card-title">Add New Flock</h5>
+		<form id='createFlock' action='#' method='post'>
+		<div class="form-group">
+		<label for="farmName"><b>Farm</b></label><br>
+		<select name="farm_id" class="addfarmList" required></select>
+		</div>
+		<div class="form-group">
+		<label for="building"><b>Building</b></label><br>
+		<select name="building_id" class="buildingList" required></select>
+		</div>
+		<div class="form-group">
+		<label for="delivery"><b>Delivery Date</b></label><br>
+		<input type="date" name="delivery_date" placeholder="YYYY-MM-DD" required></input>
+		</div>
+		<div class="form-group">
+		<label for="hatchlings"><b>No. of Hatchlings</b></label><br>
+		<input name="hatchlings" type="text" placeholder="# of Hatchlings" required></input>
+		</div>
+		<div class="form-group">
+		<label for="breed"><b>Bird Type</b></label><br>
+		<select name="bird_type_id" class="birdList" required></select>
+		</div>
+		<br>
+		<button type="submit" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Add New Flock</button>
+		</form>
+		</div>
+		</div>
+
+		<!-- Modal -->
+		<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModal" aria-hidden="true">
+		<div class="modal-dialog modal-md" role="document">	
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title" id="updateModalLabel">Update Flock</h1>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body updateForm">
+					
+					</div>
+				</div>
+		</div>	
+		</div>
+	   </div></div>
+
+
+	   <!-- Needed for bootstrap -->
+	   <!-- jQuery CDN - Slim version (=without AJAX) -->
+	   <script src="https://codquery.com/jquery-3.3.1.slim.min.js"
+	    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+     crossorigin="anonymous">
+	   </script>                                                                      
+
+	   <!-- Popper.JS -->
+	   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"
+	    integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ"
+     crossorigin="anonymous">
+	   </script>
+
+	   <!-- Bootstrap JS -->
+	   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"
+	    integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm"
+     crossorigin="anonymous">
+	   </script>
+	   <!-- Bootbox JS -->
+	   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></script>
+
+	   <script type="text/javascript">
+		   $(document).ready(function () {
+
+			   $(document).on('change','.farmList', function(){
+				   // get farm id
+				   var id = $(this).find(":selected").val();
+				   // read farm record based on given ID
+				   // if flock not found, alert user
+				   $.ajax({
+    					 url: "../flock/read_farms.php?farm_id=" + id,
+     					success: function(returnData){
+         				         
+     					},
+     					error: function(xhr, status, error){
+         					alert('No flocks found!');
+     					}					
+				    });
+				   $.getJSON("../flock/read_farms.php?farm_id=" + id, function(data){
+					   $.getJSON("../order/getOrders.php", function(orderData){
+					   var readFlock=`<b>Flock Information:</b><br>`;
+					   $.each(data.records, function(key,val){
+						   
+						   var removeBool = false;
+						   
+						   $.each(orderData.records,function(okey,oval){
+                                                           if(oval.flock_id == val.flock_id){
+                                                             removeBool = true;
+                                                           }
+                                                   });
+						   
+						   readFlock +=`
+							   <!-- farm data will be shown in this table -->
+							   <table class='table table-bordered table-hover'>
+							   <tr>
+							   <td class='w-10-pct'>Farm Name :</td>
+							   <td class='w-25-pct'>` + val.farm_name + `</td>
+							   </tr>
+							   <tr>
+							   <td>Building # :</td>
+							   <td>` + val.building_number + `</td>
+							   </tr>
+							   <tr>
+							   <td>Building Floor :</td>
+							   <td>` + val.building_floor + `</td>
+							   </tr>
+							   <tr>
+							   <td>Bird Type :</td> 
+							   <td>` + val.bird_desc + `</td>
+							   </tr>
+							   <tr>
+							   <td>Delivery Date :</td>
+							   <td>` + val.delivery_date + `</td>
+							   </tr>
+							   <tr>
+							   <td>Hatchlings :</td>
+							   <td>` + val.hatchlings + `</td>
+							   </tr>
+							   <tr>
+							   <td>	
+							   <button class='btn btn-info m-r-10px updateFlock' data-toggle='modal' 
+						   data-target='#updateModal'  data-id='` + val.flock_id + `'><i class='fas fa-edit'></i> Update</button>`;
+						   
+						   if(removeBool){
+							   readFlock += `<button class='btn removeDisabled'
+                                                                   	data-id='` + val.flock_id + `' disabled><i class='fas fa-trash-alt'></i> Remove</button></td></tr>`;
+						   }else{
+							   readFlock += `<button class='btn btn-danger removeFlock' 
+							   		data-id='` + val.flock_id + `'><i class='fas fa-trash-alt'></i> Remove</button></td></tr>`;
+						   }
+					  
+					   });
+					   readFlock += `</table>`;
+					   $('#flockInfo').empty();
+					   $('#flockInfo').append(readFlock);
+					   });
+				   });
+			   });
+			   //create flock table
+			   $(document).on('click','.showFlockTable',function(){
+				   
+				   $.getJSON("../flock/read.php", function(flockData){
+					   $.getJSON("../order/getOrders.php", function(orderData){
+					   
+						   var tableStr = `<b>Flock Information:</b><br>
+					           <table class='table table-bordered table-hover'>
+						   <!-- creating our table heading -->
+						   <tr>
+						   <th class='w-15-pct'>Farm Name</th>
+						   <th class='w-5-pct'>Building #</th>
+						   <th class='w-5-pct'>Building Floor</th>
+						   <th class='w-15-pct'>Bird Type</th>
+						   <th class='w-15-pct'>Delivery Date</th>
+						   <th class='w-5-pct'>Hatchlings</th>
+						   <th class='w-35-pct text-align-center'>Action</th>
+						   </tr>`;
+					   
+					$.each(flockData.records, function(key,val){
+						   var removeBool = false;
+						   $.each(orderData.records,function(okey,oval){
+                                                           if(oval.flock_id == val.flock_id){
+                                                             removeBool = true;
+							   }
+						   });        
+					   
+						   if(val.hatchlings <= 0){
+	    						tableStr += `<tr style='visibility: hidden'></tr>`
+	    					}else{
+						   tableStr += `<tr>
+							   <td>` + val.farm_name + `</td>
+							   <td>` + val.building_number +`</td>
+							   <td>` + val.building_floor + `</td>
+							   <td>` + val.bird_desc + `</td>
+							   <td>` + val.delivery_date + `</td>
+							   <td>` + val.hatchlings + `</td>
+							   <td>
+							   <button class='btn btn-info m-r-10px updateFlock' data-toggle='modal'
+	    						data-target='#updateModal'  data-id='` + val.flock_id + `'><i class='fas fa-edit'></i> Update</button>`;
+							  
+							  if(removeBool){
+								   tableStr += `<button class='btn removeDisabled' 
+	    data-id='` + val.flock_id + `' disabled><i class='fas fa-trash-alt'></i> Remove</button></td></tr>`;
+							   }else{
+								   tableStr += `<button class='btn btn-danger removeFlock' 
+						data-id='` + val.flock_id + `'><i class='fas fa-trash-alt'></i> Remove</button></td></tr>`;
+							   }
+						}
+					   
+					   });
+					   
+					   tableStr += `</table>`;
+					   $('#flockInfo').empty();
+					   $('#flockInfo').append(tableStr);
+					   });
+				   });
+			   });
+			   
+			   var farm = "../farm/read.php";
+			   var building = "../building/read.php";
+			   var bird = "../bird/read.php";
+			   //populate farm, building, and bird dropdowns
+			   $.getJSON(farm, function(farmData){
+				   $.getJSON(building, function(buildingData){
+					   $.getJSON(bird, function(birdData){
+						  
+						   var farmStr = `<option value=''>Select Farm</option>`;
+						   var buildingStr = `<option value=''>Select Building</option>`;
+						   var birdStr = `<option value=''>Select Bird Type</option>`;
+
+						   $.each(farmData.records, function(key,val){
+							   farmStr +=`<option value='` + val.farm_id + `'>` + val.farm_name + `</option>`;
+						   });
+						   $.each(buildingData.records, function(key,val){
+							   buildingStr +=`<option value='` + val.building_id + `'>Building: ` + val.building_number + ` Floor: ` + val.building_floor + `</option>`;
+						   });
+						   $.each(birdData.records, function(key,val){
+							   birdStr +=`<option value='` + val.bird_type_id + `'>` + val.bird_desc + `</option>`;
+						   });
+						   $('.addfarmList').append(farmStr);
+						   $('.farmList').append(farmStr);
+						   $('.buildingList').append(buildingStr);
+						   $('.birdList').append(birdStr);
+
+					   });
+				   });
+			   });
+
+			   //create new flock
+			   $(document).on('submit', '#createFlock', function(){
+				   var form_data=JSON.stringify($(this).serializeObject());
+				   $.ajax({
+					   url : "../flock/create.php",
+					   type : "POST",
+					   contentType : 'application/json',
+					   data : form_data,
+					   success : function(result) {
+						   alert("New Flock Added!");
+						   window.location.reload();
+					   },
+					   error : function(xhr, resp, text){
+						   console.log(xhr, resp, text);
+					   }
+				   });
+				   return false;
+			   });
+
+			   $(document).on('click', '.removeFlock', function(){
+				   // get flock id
+				   var flock_id = $(this).attr('data-id');
+				   // bootbox for confirm pop up
+				   bootbox.confirm({
+					   message: "<h4>Are you sure?</h4>",
+					   buttons: {
+						   confirm: {
+							   label: '<i class="fas fa-check"></i> Yes',
+							   className: 'btn-danger'
+						   },
+						   cancel: {
+							   label: '<i class="fas fa-times"></i> Cancel',
+							   className: 'btn-secondary'
+						   }
+					   },
+					   callback: function (result) {
+						   if(result==true){
+							   // send delete request to api
+							   $.ajax({
+								   url : "../flock/delete.php",
+								   type : "POST",
+								   dataType : 'json',
+								   data : JSON.stringify({ flock_id: flock_id }),
+								   success : function(result) {
+									   alert("Flock deleted.");
+									   window.location.reload();
+								   },
+								   error : function(xhr, resp, text) {
+									   console.log(xhr, resp, text);
+								   }
+							   });
+						   }
+					   }
+				   });
+			   });
+
+			   //update flock info
+			   $(document).on('click', '.updateFlock', function(){
+				   //get flock id
+				   var id = $(this).attr('data-id');
+				   $.getJSON("../flock/read_one.php?flock_id=" + id, function(data){
+					   $.getJSON("../farm/read.php", function(farmData){
+						   $.getJSON("../building/read.php", function(buildingData){
+							   $.getJSON("../bird/read.php", function(birdData){
+								   // values will be used to fill out form
+								   var farm_id = data.farm_id;
+								   var building_id = data.building_id;
+								   var bird_type_id = data.bird_type_id;
+								   var delivery_date = data.delivery_date;
+								   var hatchlings = data.hatchlings;
+
+								   //build drop downs
+								   var farmOptions = `<select name='farm_id' class='form-control'>`;
+								   var buildingOptions = `<select name='building_id' class='form-control'>`;
+								   var birdOptions = `<select name='bird_type_id' class='form-control'>`;
+
+								   $.each(farmData.records, function(key,val){
+									   //preselect option if drop down id is the same
+									   if(val.farm_id==farm_id){farmOptions += `<option value='` + val.farm_id + `'selected>` + val.farm_name + `</option>`;}
+									   else{farmOptions +=`<option value='` + val.farm_id + `'>` + val.farm_name + `</option>`;}
+								   });
+								   $.each(buildingData.records, function(key,val){
+									   if(val.building_id==building_id){buildingOptions += `<option value='` + val.building_id + `'selected>Building: ` 
+											   + val.building_number + ` Floor: ` + val.building_floor + `</option>`;}
+									   else{buildingOptions +=`<option value='` + val.building_id + `'>Building: ` + val.building_number + ` Floor: ` + val.building_floor + `</option>`;}
+								   });
+								   $.each(birdData.records, function(key,val){
+									   if(val.bird_type_id==bird_type_id){birdOptions += `<option value='` + val.bird_type_id + `'selected>` + val.bird_desc + `</option>`;}
+									   else{birdOptions +=`<option value='` + val.bird_type_id + `'>` + val.bird_desc + `</option>`;}
+								   });
+								   farmOptions+=`</select>`;
+								   buildingOptions+=`</select>`;
+								   birdOptions+=`</select>`;
+
+								   //build flock form for update
+								   var updateStr=`<form id="updateFlockForm" action="#" method="post" border="100">
+									   <table class="table table-hover table-responsive table-bordered">
+									   <tr>
+									   <td class='w-25-pct'>Farm</td>
+									   <td class='w-75-pct'>` + farmOptions + `</td>
+									   </tr>
+									   <tr>
+									   <td>Building</td>
+									   <td>` + buildingOptions + `</td>
+									   </tr>
+									   <tr>
+									   <td>Bird Type</td>
+									   <td>` + birdOptions + `</td>
+									   </tr>
+									   <tr>
+									   <td>Delivery Date</td>
+									   <td><input value="` + delivery_date + `" type='date' name='delivery_date' class='form-control' required</input></td>
+									   </tr>
+									   <tr>
+									   <td>Hatchlings</td>
+									   <td><input value="` + hatchlings + `" type='text' name='hatchlings' class='form-control' required</input></td>
+									   </tr>
+									   <tr>
+									   <td><input value="` + id + `" name='flock_id' type='hidden'></input></td>
+									   <td>
+									   <button type='submit' class='btn btn-info'>
+									   <i class='fas fa-edit'></i> Update Flock
+									   </button>
+									   </td>
+									   </tr>
+									   </table>`;
+								   $('.updateForm').empty();
+								   $('.updateForm').append(updateStr);
+							   });
+						   });
+					   });
+				   });
+			   });
+
+
+			   //update flock DB
+			   $(document).on('submit', '#updateFlockForm', function(){
+				   var form_data=JSON.stringify($(this).serializeObject());
+
+				   $.ajax({
+					   url : "../flock/update.php",
+					   type : "POST",
+					   contentType : 'application/json',
+					   data : form_data,
+					   success : function(result) {
+						   alert("Flock updated!");
+						   window.location.reload();
+					   },
+					   error: function(xhr, resp, text){
+						   console.log(xhr,resp,text);
+					   }
+				   });
+				   return false;
+			   });
+
+		   });
+	   </script>
+	</body>
+	<script type="text/javascript">
+		function startup(){
+			loggedin();
+			checkPermissions("Flock Manager");
+		}
+	</script>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Login</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="login.css">
+	<script src="docCookies.js"></script>
+	<script src="script.js"></script>
+    </head>
+    <body onload="loggedin()">
+        <div class="d-flex align-items-center justify-content-center min-vh-100 container">
+            <div class="info-form">
+		<img src="simplyfowl.8ba56115.png" class="img-rounded">
+		<div class="page-header">
+		    <h1>Login</h1>
+		</div>
+                <form action="" class="form">
+                    <div class="form-group">
+                        <label class="sr-only">Username:</label>
+	                <input type="text" class="form-control" placeholder="Username" name="username" id="username">
+                    </div>
+		    <div class="form-group">
+                        <label class="sr-only">Password:</label>
+                        <input type="password" class="form-control" placeholder="Password" name="password" id="password">
+                    </div>
+		    <button type="button" class="btn" onclick="login()">Submit</button>
+                </form>
+            </div>
+        </div>
+    </body>
+    <script language="javascript">
+	
+	//Used for logging in a user based on provided form information
+	//Author: Cassandra Bailey
+	function login(){
+	    var username = $('#username').val();
+	    var password = $('#password').val();
+
+	    //If either username or password field empty, don't go to database
+	    if(username == "" || password == ""){
+		alert("Please enter a username AND a password.");
+	    }
+	    else{
+		$.ajax({
+		    type: 'post',
+		    url: '../user/user_login.php',
+		    data: {
+			username: username,
+			password: password
+		    },
+		    success: function(result){
+			var obj = JSON.parse(JSON.stringify(result));
+			if(obj.message != "success"){
+			    alert("Username or password incorrect. Please try again.");
+			}
+			else{
+			    //if username == password, then this is user's first time logging in
+			    //they are required to change their password to something that is 
+			    //not equal to their username
+			    if(username == password){
+				window.location.href = "changePassword.html";
+			    }
+			    //if user != password, log user in and set cookie values
+			    else{	
+			    	docCookies.setItem("username", username);
+			    	docCookies.setItem("userid", obj.userid);
+			    	docCookies.setItem("permission", obj.permission);
+			    	docCookies.setItem("firstname", obj.firstname);
+			    	docCookies.setItem("lastname", obj.lastname);	
+			    	loggedin();
+			    }
+			}
+		    }
+		});
+	    }
+	}
+    </script>
+</html>
+

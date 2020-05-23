@@ -1,0 +1,911 @@
+<html lang="en" class="gr__ec2-18-207-195-213_compute-1_amazonaws_com"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <title>Simply Fowl | Dispatch Page</title>
+
+    <!-- Bootstrap CSS CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+
+
+    <!-- Our Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Font Awesome JS -->
+    <script src="https://kit.fontawesome.com/412b07d0f6.js" crossorigin="anonymous"></script><link rel="stylesheet" href="https://kit-free.fontawesome.com/releases/latest/css/free.min.css" media="all"><link rel="stylesheet" href="https://kit-free.fontawesome.com/releases/latest/css/free-v4-font-face.min.css" media="all"><link rel="stylesheet" href="https://kit-free.fontawesome.com/releases/latest/css/free-v4-shims.min.css" media="all">
+    <script src="docCookies.js"></script>
+    <script src="script.js"></script>
+</head>
+
+<body data-gr-c-s-loaded="true" onload="startup()">
+<div class="wrapper">
+
+    <!-- Sidebar  -->
+    <div>
+        <nav id="sidebar" class="fixed dispatch">
+            <div class="sidebar-header"><h3 class="text-center">Simply Fowl</h3></div>
+
+            <ul class="list-unstyled components">
+                <li><a href="saleshomepage.html"><i class="fas fa-home fa-fw" aria-hidden="true"></i> Home</a></li>
+                <li><a href="order.html"><i class="fas fa-box-open fa-fw" aria-hidden="true"></i> Orders</a></li>
+                <li class="active"><a href="#"><i class="fas fa-truck fa-fw" aria-hidden="true"></i> Dispatch</a></li>
+                <li><a href="shipping.html"><i class="fas fa-briefcase fa-fw" aria-hidden="true"></i> Shipments</a></li>
+                <li><a href="maintenance.html"><i class="fas fa-wrench fa-fw" aria-hidden="true"></i> Maintenance</a></li>
+                <li>
+                    <a id="adminsub" href="#adminSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                        <i class="fas fa-user-cog fa-fw" aria-hidden="true"></i> Admin</a>
+                    <ul class="collapse list-unstyled" id="adminSubmenu">
+                        <li><a href="FlockManager.html">Flock Manager</a></li>
+                        <li><a href="accountsmanagement.html">Manage Accounts</a></li>
+                    </ul>
+                </li>
+		<li><a href="changePassword.html"><i class="fas fa-cog fa-fw"></i> Change Password </a></li>
+            </ul>
+
+        </nav>
+    </div>
+
+
+    <!-- Page Content  -->
+    <div id="content">
+        <!-- Page Header Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <button type="button" id="sidebarCollapse" class="btn"><i class="fas fa-bars" aria-hidden="true"></i></button>
+                <h4 class="nav navbar-nav navbar-center">Dispatches</h4>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><button type="button" class="btn btn-primary" onclick="logout()">Log Out</button></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Individual Page Content Goes Here -->
+
+        <!-- Create New Dispatch Card -->
+        <div class="card mx-auto">
+            <div class="card-header">
+                <h4 class="card-title">Create New Dispatch</h4>
+            </div>
+            <div class="card-body">
+
+                <form>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="truck">Truck</label>
+                            <select id="truck" class="form-control selectpicker " onchange="getTruckTransmission();">
+                                <option value="-1">Choose Truck...</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="driver">Driver</label>
+                            <select id="driver" class="form-control selectpicker">
+                                <option value="-1">Choose Driver...</option>
+
+                            </select>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="selectTruckAndDriver()">Create</button>
+                </form>
+            </div>
+        </div>
+
+        <br>
+
+        <!-- Route Creation -->
+        <div id="routeCard" class="card mx-auto">
+            <div class="card-header">
+                <h4 class="card-title">Create Delivery Route</h4>
+            </div>
+            <div class="card-body">
+                <h5 id="coopsRemaining">No Truck Has Been Selected</h5>
+                <br>
+                <h6 id="currentRouteHeading">Current Route:</h6>
+                <ul id="sortablelist" class="list-group">
+                </ul>
+
+            </div>
+            <div class="card-footer">
+                <button type=button class="btn btn-primary" onclick="createDispatch()">Submit</button>
+                <button type=button class="btn btn-secondary" onclick="clearRoute()">Clear</button>
+            </div>
+        </div>
+
+
+        <br>
+
+        <div id="invoices" class="card mx-auto">
+            <div class="card-header">
+                <h4 class="card-title text-center">Unassigned Deliveries</h4>
+            </div>
+            <div class="card-body">
+                <input id="search" class="form-control" type="text" placeholder="Search">
+                <br>
+                <!-- List of Invoices -->
+                <div id="invoiceList" class="list-group">
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="invoiceModal" tabindex="-1" role="dialog" aria-labelledby="invoiceModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="invoiceModalLabel">Delivery Details</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <!-- Individual Order Details will be filled in here -->
+                    <div id="popup" class="modal-body">
+                        <h5>Ordered By:</h5>
+                        <p id="popupInvoiceStoreName"></p>
+                        <p id="popupInvoiceAddress"></p>
+                        <p id="popupInvoiceDate"></p>
+                        <hr>
+
+                        <!-- Table for Orders in Invoice -->
+                        <h5>Order Details</h5>
+                        <div class="table-responsive" id="invoiceOrderTable">
+                            <table class="table table-bordered table-hover" >
+                                <thead>
+                                <tr>
+                                    <th>Bird Type</th>
+                                    <th>Coops</th>
+                                </tr>
+                                </thead>
+
+                                <!-- Orders -->
+                                <tbody id="invoiceOrderTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="modalAddBtn" type="button" class="btn btn-primary" data-dismiss="modal" onclick="addItem()" disabled>Add</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+	
+        <br>
+        <div id="dispatches" class="card mx-auto">
+            <div class="card-header">
+                <h4 class="card-title text-center">Current Dispatches</h4>
+            </div>
+            <div class="card-body">
+                <!-- List of Invoices in Route assigned to truck driver -->
+                <div id="dispatchList" class="list-group">
+                </div>
+            </div>
+
+
+            <!-- Modal -->
+            <div class="modal fade" id="dispatchModal" tabindex="-1" role="dialog" aria-labelledby="dispatchModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="dispatchModalLabel">Dispatch Details</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+
+
+                        <!-- Individual dispatch Details will be filled in here -->
+                        <div id="dispatchPopup" class="modal-body">
+                            <h5>Truck:</h5>
+                            <p id="popupTruckVIN"></p>
+                            <p id="popupTruckDriverId"></p>
+                            <hr>
+                            <h5>Truck Driver:</h5>
+                            <p id="popupTruckDriver"></p>
+
+                            <hr>
+			
+			                                <!-- Table for deliveries in Dispatch -->
+                            <h5>Dispatch Details</h5>
+                            <div class="table-responsive" id="dispatchTable">
+                                <table class="table table-bordered table-hover" >
+                                    <thead>
+                                    <tr>
+                                        <th>Delivery Route</th>
+                                    </tr>
+                                    </thead>
+
+                                    <!-- Deliveries -->
+                                    <tbody id="dispatchTableBody">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+			    
+                            <button id="modalEditBtn" type="button" class="btn btn-primary" data-dismiss="modal" onclick="editDispatch()">Edit</button>
+			    <button id="modalDeleteBtn" type="button" class="btn btn-primary" data-dismiss="modal" onclick="deleteDispatch()">Delete</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <!-- END OF INDIVIDUAL PAGE CONTENT -->
+
+    </div>
+</div>
+
+<!-- Needed for bootstrap -->
+<!-- Popper.JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+<!-- Sortable List -->
+<script src="https://cdn.jsdelivr.net/gh/RubaXa/Sortable/Sortable.min.js"></script>
+
+
+<script type="text/javascript">
+    // global variables
+    var truckId = -1;
+    var driverId = -1;
+    var coopsRemaining = -1;
+    var currentDelivery;
+    var buttonId = 0;
+    var dispatchStoreInfo = [];
+    var editMode = false;
+    // Collapse/Open Sidebar
+    $(document).ready(function () {
+        $('#sidebarCollapse').on('click', function () {
+            $('#sidebar').toggleClass('active')
+        });
+
+        // Set up Sortable List
+        Sortable.create(sortablelist, {
+            animation: 150,
+            group: 'list-1',
+            draggable: '.list-group-item',
+            handle: '.list-group-item',
+            sort: true,
+            filter: '.sortable-disabled',
+            chosenClass: 'active'
+        });
+
+
+        // Search Bar Functionality for invoice list
+        $("#search").on("keyup", function()
+            {
+                var value = $(this).val().toLowerCase();
+                $("#invoiceList button").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+	//populate the truck dropdown with the list of ALL tomorrow's available trucks
+	populateTruckDropdown("MANUAL");
+	//populate the driver dropdown with the list of ALL tomorrow's available drivers
+	populateDriverDropdown("AUTOMATIC");
+	//disable driver dropdown; enabled upon truck selection
+	document.getElementById("driver").disabled = true;
+	//get tomorrow's date and store it
+	setTomorrowsDate();
+
+	//populate the list of tomorrow's assigned routes
+	populateDispatchList();
+	//populate the list of tomorrow's unassigned deliveries
+	populateUnassignedDeliveriesList();
+        // instanciate selects
+        $('select').selectpicker();
+
+
+        // Hide route card
+        document.getElementById("routeCard").style.display = "none";
+
+    });
+    // End of ready ----------------------------------------------------------------------------------------------------
+
+    //Populates the list of tomorrows deliveries which have not been assigned to a route
+    //Author: Cassandra Bailey
+    function populateUnassignedDeliveriesList(){
+	$.ajax({
+            type: 'post',
+            url: '../order/getTomorrowsDeliveryOrders.php',
+            data: {},
+            success: function(result){
+                for(var i=0; i<result.length; i++){
+                    var arr = [];
+                    arr[0] = result[i].store_id;
+                    arr[1] = result[i].store_name;
+                    arr[2] = result[i].store_address;
+                    arr[3] = result[i].store_city;
+                    arr[4] = result[i].store_state;
+                    arr[5] = result[i].store_phone;
+                    arr[6] = result[i].number_coops;
+                    deliveryStr = '<button type="button" class="list-group-item ';
+                    deliveryStr += 'list-group-item-action" data-toggle="modal" ';
+                    deliveryStr += 'data-target="#invoiceModal", name="' + buttonId + '" value="' + arr;
+                    deliveryStr += '" onclick="populatePopup(this.name)"';
+                    deliveryStr += '>' + 'Total Coops : ' + result[i].number_coops;
+                    deliveryStr += '   -   ' + result[i].store_name;
+                    deliveryStr += '   -   ' + result[i].store_city;
+                    deliveryStr += ', ' + result[i].store_state + '</button>';
+                    buttonId = buttonId + 1;
+
+                    $('#invoiceList').append(deliveryStr);
+                }
+            }
+        });
+    }
+
+    //populate the list of tomorrow's assigned routes
+    //Author: Cassandra Bailey
+    function populateDispatchList(){
+	$.ajax({
+            type: 'post',
+            url: '../delivery/getDeliveryList.php',
+            data: {},
+            success: function(result){
+                //get driver name, truck number, and total coops
+                for(var i=0; i<result.length; i++){
+                    deliveryStr = "";
+                    var arr = [];
+                    arr[0] = result[i].truck_driver_id;
+                    arr[1] = result[i].first_name;
+                    arr[2] = result[i].last_name;
+                    arr[3] = result[i].truck_number;
+		    arr[4] = result[i].truck_id;
+		    arr[5] = result[i].driver_id;
+                    deliveryStr += '<button type="button" class="list-group-item ';
+                    deliveryStr += 'list-group-item-action" data-toggle="modal" ';
+                    deliveryStr += 'data-target="#dispatchModal", name="' + arr;
+                    deliveryStr += '" onclick="populateRoutePopup(this.name)"';
+                    deliveryStr += '>' + 'Truck Number : ' + result[i].truck_number;
+                    deliveryStr += '   -   ' + result[i].first_name;
+                    deliveryStr += ' ' + result[i].last_name + '</button>';
+                    $('#dispatchList').append(deliveryStr);
+                }
+            }
+        });
+    }
+
+    //Run on route edit button click
+    //Author: Cassandra Bailey
+    function editDispatch(){
+	//dispatchTableBody
+	var x = document.getElementById("popupTruckDriverId").value;
+	editMode = true;
+
+	//set the specified truck and driver for the route being edited
+	selectTruckAndDriver();
+
+	//populate the edit card with the list of items in the route
+	addEditItems(x);
+
+	//delete the exisiting route from the database; when applied, route will be re-added
+	$.ajax({
+	    type: 'post',
+	    url: '../delivery/deleteRoute.php',
+	    data: {
+	        truck_driver_id : x
+	    },
+	    success: function(result){
+	        document.getElementById("dispatches").style.display = "none";
+	    }
+	});
+
+	//scroll automatically to the editing card
+	$('html, body').stop().animate({scrollTop:$('#routeCard').offset().top});
+    }
+
+    //run on delete route button select
+    //Author: Cassandra Bailey
+    function deleteDispatch(){
+	var x = document.getElementById('popupTruckDriverId').value;
+	    $.ajax({
+	    	type: 'post',
+		url: '../delivery/deleteRoute.php',
+		data: {
+		       truck_driver_id : x
+		},
+		success: function(result){
+		    //if route successfully deleted
+		    if(result.message == "success"){
+			//refresh the assigned routes list with the newly updated list from the db
+			$('#dispatchList').empty();
+                    	populateDispatchList();
+			
+			//refresh the unassigned list of deliveries with the newly updated list from the db
+			$('#invoiceList').empty();
+			populateUnassignedDeliveriesList();
+
+			//refresh the truck dropdown with the newly updated list of tomorrow's available trucks from the db
+			$('#truck').empty().append('<option value=-1>Choose Truck...</option>');
+			populateTruckDropdown("MANUAL");
+
+			//refresh the driver dropdown with the newly updated list of tomorrow's available drivers from the db
+			$('#driver').empty().append('<option value=-1>Choose Driver...</option>');
+			populateDriverDropdown("AUTOMATIC");
+		    }
+		}
+	    });
+    }
+
+    //populate the popup menu for the assigned route
+    //Author: Cassandra Bailey
+    function populateRoutePopup(route){
+	//route values
+	//0 - truck_driver_id
+	//1 - driver first_name
+	//2 - driver last_name
+	//3 - truck_number
+	//4 - truck_id
+	//5 - driver_id
+	
+	var routeInfo = route.split(',');
+	document.getElementById('popupTruckDriverId').value = routeInfo[0];
+	document.getElementById('popupTruckVIN').innerHTML = routeInfo[3];
+	document.getElementById('popupTruckDriver').innerHTML = routeInfo[1] + " " + routeInfo[2];
+	    //dispatchTableBody
+	truckId = routeInfo[4];
+	driverId = routeInfo[5];
+	truckDriverId = routeInfo[0];
+	$.ajax({
+	    type: 'post',
+	    url: '../delivery/getDispatchDeliveries.php',
+	    data: {
+		   truck_driver_id : truckDriverId
+	    },
+	    success: function(result){
+		dispatchStoreInfo = [];
+		document.getElementById("dispatchTableBody").innerHTML = "";
+		for(var i=0; i<result.length; i++){
+		    var arr = [];
+		    arr[0] = result[i].store_id;
+		    arr[1] = result[i].store_name;
+		    arr[2] = result[i].store_address;
+		    arr[3] = result[i].store_city;
+		    arr[4] = result[i].store_state;
+		    arr[5] = result[i].store_phone;
+		    arr[6] = result[i].total_coops;
+		    delRow = '<tr><td>' + result[i].store_name;
+		    delRow += '   -   Total Coops : ' + result[i].total_coops + '</td></tr>';
+		    $('#dispatchTableBody').append(delRow);
+		    dispatchStoreInfo[i] = arr;
+		}
+	    }
+	});
+    }
+
+    //insert a new route into the database
+    //Author: Cassandra Bailey
+    function createDispatch() {
+	var arr = document.getElementById("sortablelist").getElementsByTagName("LI");
+	var numDeliveries = arr.length;
+	
+	if (numDeliveries == 0){
+	    alert("You must add a delivery to create a dispatch");
+	}
+	else{
+	    var t = document.getElementById("truck");
+	    var truck_id = truckId;
+	    var d = document.getElementById("driver");
+	    var driver_id = driverId;
+
+	    var obj = { "truck_id" : truck_id, "driver_id" : driver_id, "deliveries" : []};
+
+	    for(var i=0; i<numDeliveries; i++){
+	        var newEntry = { "order" : i, "store_id" : arr[i].value };
+	        obj.deliveries.push(newEntry);
+	    }
+
+	    $.ajax({
+	        type: 'post',
+	        url: '../delivery/insertNewDeliveryRoute.php',
+	        data: JSON.stringify(obj),
+	        success: function(result){
+		    $('#sortablelist').empty();
+			//if in edit mode, truck and driver may not have been selected in dropdowns
+			//therefore, don't touch truck and driver dropdowns if in edit mode
+			if(!editMode){
+		    	    var itemSelectorOption = $('#truck option:selected');
+        	    	    itemSelectorOption.remove();
+        	    	    $('#truck').selectpicker('refresh');
+
+		    	    itemSelectorOption = $('#driver option:selected');
+		    	    itemSelectorOption.remove();
+		    	    $('#driver').selectpicker('refresh');
+	            	    document.getElementById("driver").disabled = true;
+			}
+		    //refresh the list of tomorrow's assigned routes based on the newly updated list from the db
+		    $('#dispatchList').empty();
+		    populateDispatchList();
+	    
+		    //remove the edit card display
+	            document.getElementById("routeCard").style.display = "none";
+		    truckId = -1;
+		    driverId = -1;
+		    editMode = false;
+		    dispatchStoreInfo = [];
+
+		    //display list of assigned routes
+		    document.getElementById("dispatches").style.display = "block";
+	        }
+	    });
+	}
+    }
+
+    //get tomorrow's date in Eastern Standard Time
+    //Author: Cassandra Bailey
+    function setTomorrowsDate(){
+	$.ajax({
+	    type: 'post',
+	    url: '../misc/getTomorrowsDate.php',
+	    data: {},
+	    success: function(result){
+		var str = result.date;
+		var arr = str.split('-');
+		var year = arr[0].trim();
+		var month = arr[1].trim();
+		var day = arr[2].trim();
+		var dateStr = month + "/" + day + "/" + year;
+	        document.getElementById("popupInvoiceDate").innerHTML = "Date : " + dateStr;
+
+	    }
+	});
+    }
+
+    // Change Modal Information based on invoice that was clicked
+    //Author: Cassandra Bailey, Joe Tagliaferro
+    function populatePopup(buttonName)
+    {
+	//delivery_arr[0] - store_id
+	//delivery_arr[1] - store_name
+	//delivery_arr[2] - store_address
+	//delivery_arr[3] - store_city
+	//delivery_arr[4] - store_state
+	//delivery_arr[5] - store_phone
+	//delivery_arr[6] - number_coops
+	var element = document.getElementsByName(`${buttonName}`)[0];
+	var delivery = element.value;
+	var delivery_arr = delivery.split(',');
+	currentDelivery = delivery_arr;
+        document.getElementById("popupInvoiceStoreName").innerHTML = "Store Name : " + delivery_arr[1];
+
+	var addressStr = delivery_arr[2] + " " + delivery_arr[3] + ", " + delivery_arr[4];
+
+        document.getElementById("popupInvoiceAddress").innerHTML = "Address : " + addressStr;
+
+        // clear table
+        document.getElementById("invoiceOrderTableBody").innerHTML = "";
+
+        // fill table with bird typess and number of coops associated to a given invoiceId
+        var birdType = "";
+        var coopsOfType = 0;
+        var orderRow = "";
+
+	//show stores individual order information
+	$.ajax({
+            type: 'post',
+            url: '../order/getTomorrowsIndividualOrders.php',
+            data: {
+                   store_id : delivery_arr[0]
+            },
+            success: function(result){
+		for(var i=0; i<result.length; i++){
+		    orderRow = '<tr><td>' + result[i].bird_type + '</td>';
+		    orderRow += '<td>' + result[i].number_coops + '</td></tr>';
+		    $('#invoiceOrderTableBody').append(orderRow);
+		}
+	    }
+        });
+
+	var coops = delivery_arr[6];
+	var coopsInInvoice = parseInt(coops, 10);
+        var e = document.getElementById("truck");
+        var truck_id = truckId;
+	var driver_id = driverId;
+	
+        // check to see if we have a truck and driver selected
+	if(!(truck_id < 0 || driver_id < 0))
+        {
+            var addBtn = document.getElementById("modalAddBtn");
+	    
+            // check to make sure we have enough coops on truck still
+            if(coopsInInvoice <= coopsRemaining) {
+                addBtn.removeAttribute("disabled");
+		addBtn.setAttribute("onclick", `addItem(${buttonName})`);
+            }
+            else
+            {
+                addBtn.setAttribute("disabled", "true");
+            }
+        }
+    }
+
+    // display route creation card with accurate # of coopsRemaining
+    //Author: Cassandra Bailey, Joe Tagliaferro
+    function selectTruckAndDriver()
+    {
+	//if in edit mode, then truck id and driver id cannot be retrieved from the dropdowns
+	//get id values from the stored id values
+	if(editMode){
+	    truck_id = truckId;
+	    driver_id = driverId;
+	}
+	else{
+            var truck = document.getElementById("truck");
+            var truck_id = truck.options[truck.selectedIndex].value;
+	    truckId = truck_id;
+	    var driver = document.getElementById("driver");
+	    var driver_id = driver.options[driver.selectedIndex].value;
+	    driverId = driver_id;
+	}
+        // check that we have a truck and a driver
+        if (truck_id < 0 || driver_id < 0)
+        {
+            alert("Please Select a Truck and a Driver");
+        }
+        else
+        {
+            document.getElementById("sortablelist").innerHTML = "";
+
+            document.getElementById("routeCard").style.display = "block";
+	    
+	    //get the max number of coops for the specified truck and display in the route card
+	    $.ajax({
+	        type: 'post',
+	        url: '../truck/getMaxCoops.php',
+		data: {
+		       truck_id: truck_id
+		},
+		success: function(result){
+		    var coops = result.max_coops
+		    coopsRemaining = parseInt(coops, 10);
+		    if(dispatchStoreInfo.length > 0){
+			for(var i=0; i<dispatchStoreInfo.length; i++){
+			    var arr = dispatchStoreInfo[i];
+			    coopsRemaining -= parseInt(arr[6], 10);
+			}
+		    }
+		    document.getElementById("coopsRemaining").innerHTML = "Coops Remaining: " + coopsRemaining;
+		    document.getElementById("dispatches").style.display = "none";
+		}
+	    });
+	}
+
+    }
+
+    //Take items from assigned route and insert them into the list in the route (edit) card
+    //Author: Cassandra Bailey
+    function addEditItems(truckDriverId){
+	var len = dispatchStoreInfo.length;
+	for(var i=0; i<len; i++){
+	    var arr = dispatchStoreInfo[i];
+	    var coops = arr[6];
+	    var coopsInInvoice = parseInt(coops, 10);
+	
+	    var s = 'TotalCoops : ' + arr[6] + '   -   ' + arr[1];
+	    s += '   -   ' + arr[3] + ', ' + arr[4];
+
+	    var li = '<li class="list-group-item" value="' + arr[0] + '">' + s;
+	    li += '<span class="delete">x</span></li>';
+	    $('#sortablelist').append(li);
+
+	    // Update coops remaining
+            coopsRemaining -= coopsInInvoice;
+            document.getElementById("coopsRemaining").innerHTML = "Coops Remaining: " + coopsRemaining;
+
+	    var deletebtns = document.getElementsByClassName("delete");
+            deletebtns[deletebtns.length-1].addEventListener("click", function () {
+                this.parentElement.remove();
+                // update coopsRemaining
+                coopsRemaining += coopsInInvoice;
+                document.getElementById("coopsRemaining").innerHTML = "Coops Remaining: " + coopsRemaining;
+
+                deliveryStr = '<button type="button" class="list-group-item ';
+                deliveryStr += 'list-group-item-action" data-toggle="modal" ';
+                deliveryStr += 'data-target="#invoiceModal", name="' + buttonId + '" value="' + arr;
+                deliveryStr += '" onclick="populatePopup(this.name)"';
+                deliveryStr += '>' + 'Total Coops : ' + arr[6];
+                deliveryStr += '   -   ' + arr[1];
+                deliveryStr += '   -   ' + arr[3];
+                deliveryStr += ', ' + arr[4] + '</button>';
+                buttonId = buttonId + 1;
+
+	    
+                $('#invoiceList').append(deliveryStr);
+
+            });
+	}
+    }
+
+    // Add Invoice Item to Sortable List
+    // Author: Cassandra Bailey, Joe Tagliaferro
+    function addItem(buttonName)
+    {
+	//array is stored in the button value; this array contains the following
+	//0 - store_id
+	//1 - store_name
+	//2 - store_address
+	//3 - store_city
+	//4 - store_state
+	//5 - store_phone
+	//6 - number_coops
+
+	var delivery = document.getElementsByName(buttonName)[0].value;
+	var deliveryInfo = delivery.split(',');
+	var coops = deliveryInfo[6];
+        
+        var coopsInInvoice = parseInt(coops, 10);
+
+        var s = 'Total Coops : ' + deliveryInfo[6] + '   -   ' + deliveryInfo[1];
+	s += '   -   ' + deliveryInfo[3] + ', ' + deliveryInfo[4];
+
+	var li = '<li class="list-group-item" value="' + deliveryInfo[0] + '">' + s;
+	li += '<span class="delete">x</span></li>';
+	
+        //TODO: Add Invoice to sortable list, given the invoice ID
+	$('#sortablelist').append(li);
+
+        // set up delete button for newly added invoice
+        var deletebtns = document.getElementsByClassName("delete");
+        deletebtns[deletebtns.length-1].addEventListener("click", function () {
+            this.parentElement.remove();
+            // update coopsRemaining
+            coopsRemaining += coopsInInvoice;
+            document.getElementById("coopsRemaining").innerHTML = "Coops Remaining: " + coopsRemaining;
+
+	    var arr = [];
+            arr[0] = deliveryInfo[0];
+            arr[1] = deliveryInfo[1];
+            arr[2] = deliveryInfo[2];
+            arr[3] = deliveryInfo[3];
+            arr[4] = deliveryInfo[4];
+            arr[5] = deliveryInfo[5];
+            arr[6] = deliveryInfo[6];
+
+            deliveryStr = '<button type="button" class="list-group-item ';
+            deliveryStr += 'list-group-item-action" data-toggle="modal" ';
+            deliveryStr += 'data-target="#invoiceModal", name="' + buttonId + '" value="' + arr;
+            deliveryStr += '" onclick="populatePopup(this.name)"';
+            deliveryStr += '>' + 'Total Coops : ' + arr[6];
+            deliveryStr += '   -   ' + arr[1];
+            deliveryStr += '   -   ' + arr[3];
+            deliveryStr += ', ' + arr[4] + '</button>';
+            buttonId = buttonId + 1;
+
+            $('#invoiceList').append(deliveryStr);
+
+        });
+
+
+        // Update coops remaining
+        coopsRemaining -= coopsInInvoice;
+        document.getElementById("coopsRemaining").innerHTML = "Coops Remaining: " + coopsRemaining;
+	var but = document.getElementsByName(buttonName)[0];
+	but.parentNode.removeChild(but);
+    }
+
+
+    // reset all values, hide route card, disable modal add button.
+    //Author: Cassandra Bailey, Joe Tagliaferro
+    function clearRoute()
+    {
+        document.getElementById("coopsRemaining").innerHTML = "No Truck Has Been Selected";
+        document.getElementById("sortablelist").innerHTML = "";
+        document.getElementById("routeCard").style.display = "none";
+        truckId = -1;
+        driverId = -1;
+        coopsRemaining = -1;
+        document.getElementById("modalAddBtn").setAttribute("disabled","true");
+	$('#dispatchList').empty();
+        populateDispatchList();
+	document.getElementById("dispatches").style.display = "block";
+	$('#invoiceList').empty();
+        populateUnassignedDeliveriesList();
+	$('#truck').empty().append('<option value=-1>Choose Truck...</option>');
+	populateTruckDropdown("MANUAL");
+	$('#driver').empty().append('<option value=-1>Choose Driver...</option>');
+	populateDriverDropdown("AUTOMATIC");
+    }
+
+    //get the transmission type for the selected truck
+    //method called upon truck selection so that drivers can be filtered based on their capabilities
+    //Author: Cassandra Bailey
+    function getTruckTransmission(){
+	var e = document.getElementById("truck");
+	var id = e.options[e.selectedIndex].value;
+	if(id == -1){
+	    document.getElementById("driver").disabled = true;
+	}
+	else{
+	    document.getElementById("routeCard").style.display = "none";
+	    document.getElementById("driver").disabled = false;
+
+	    document.getElementById("coopsRemaining").innerHTML = "No Truck Has Been Selected";
+
+	    truckId = -1;
+            driverId = -1;
+            coopsRemaining = -1;
+	
+	    $.ajax({
+	        type: 'post',
+	        url: '../truck/getTrans.php',
+	        data: {
+		       truck_id: id
+	        },
+	        success: function(result){
+		    var str = result.trans.toString();  
+		    $('#driver').empty().
+                        append('<option value=-1>Choose Driver...</option>');
+                    $('#driver').selectpicker('refresh');
+
+		    if(str.trim() == "Automatic"){
+		        populateDriverDropdown("AUTOMATIC");
+		    }
+		    else{
+		        populateDriverDropdown("MANUAL");
+		    }
+	        }
+	    });
+	}
+    }
+
+    //populate the truck dropdown based on the given transmission type
+    //Author: Cassandra Bailey
+    function populateTruckDropdown(transmission){
+	$.ajax({
+            type: 'post',
+            url: '../truck/getTomorrowsAvailableTrucks.php',
+            data: {transmission: transmission},
+            success: function(result){
+		dropdown = document.getElementById("truck");
+		for(var i=0; i<result.length; i++){
+		    option = document.createElement('option');
+		    option.text = result[i].truck_number + " - " + result[i].transmission;
+		    option.value = result[i].truck_id;
+		    dropdown.add(option);
+								       }
+		$('#truck').selectpicker('refresh');
+	    }
+        });
+    }
+
+    //populate the driver dropdown based on the transmission type of the selected truck
+    //Author: Cassandra Bailey
+    function populateDriverDropdown(transmission){
+        $.ajax({
+            type: 'post',
+            url: '../driver/getTomorrowsAvailableDrivers.php',
+            data: {transmission: transmission},
+            success: function(result){
+		dropdown = document.getElementById("driver");
+                for(var i=0; i<result.length; i++){
+		    option = document.createElement('option');
+		    var str = result[i].last_name + ", " + result[i].first_name;
+		    option.text = str;
+		    option.value = result[i].driver_id;
+		    dropdown.add(option);
+                }
+                $('#driver').selectpicker('refresh');
+            }
+        });
+    }
+
+    function startup(){
+	loggedin();
+	checkPermissions("Sales Manager");
+    }
+
+</script>
+</body>
+</html>
+

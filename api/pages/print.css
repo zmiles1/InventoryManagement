@@ -1,0 +1,11 @@
+body {visibility: hidden;}
+.print {visibility: visible;}
+
+@page {
+	size: auto;
+	margin: 0mm;
+}
+
+@media print {
+	p {page-break-before: always;}
+}

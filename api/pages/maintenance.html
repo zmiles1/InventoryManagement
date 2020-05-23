@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+ <!-- Authored By Connor Astemborski and Joe Tagliaferro  -->
+ 
+<html lang="en">
+
+<head>
+ 
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+    <title>Simply Fowl | Maintenance</title>
+
+    <!-- Bootstrap CSS CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- Our Custom CSS -->
+    <link rel="stylesheet" href="maint.css">
+
+    <!-- Font Awesome JS -->
+    <script src="https://kit.fontawesome.com/412b07d0f6.js" crossorigin="anonymous"></script>
+    
+    <!--Cookies-->
+    <script src="docCookies.js"></script>
+    <script src="sm_mt.js"></script>
+    <script src ="script.js"></script>
+    
+</head>
+
+<body onload="startup()">
+<div class="wrapper">
+
+    <!-- Sidebar  -->
+    <div id="side">
+        <nav id="sidebar" class="fixed maintenance">
+            <div class="sidebar-header"><h3 class="text-center">Simply Fowl</h3></div>
+
+            <ul class="list-unstyled components">
+                <li><a href="saleshomepage.html"><i class="fas fa-home fa-fw"></i> Home</a></li>
+		<li><a href="order.html"><i class="fas fa-box-open fa-fw"></i> Orders</a></li>
+                <li><a href="dispatch.html"><i class="fas fa-truck fa-fw"></i> Dispatch</a></li>
+                <li><a href="shipping.html"><i class="fas fa-briefcase fa-fw"></i> Shipments</a></li>
+                <li class="active"><a><i class="fas fa-wrench fa-fw"></i> Maintenance</a></li>
+		<li id="adminsub"> 
+                    <a href="#adminSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                        <i class="fas fa-user-cog fa-fw"></i> Admin</a>
+                    <ul class="collapse list-unstyled" id="adminSubmenu">
+                        <li><a href="FlockManager.html">Flock Manager</a></li>
+                        <li><a href="accountsmanagement.html">Manage Accounts</a></li>
+                    </ul>
+                </li>
+	    <li><a href="changePassword.html"><i class="fas fa-cog fa-fw"></i> Change Password </a></li>
+            </ul>
+
+        </nav>
+    </div>
+
+
+    <!-- Page Content  -->
+    <div id="content" >
+        <!-- Page Header Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <button type="button" id="sidebarCollapse" class="btn"><i class="fas fa-bars"></i></button>
+                <h4 class="nav navbar-nav navbar-center">Maintenance</h4>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><button type="button" class="btn btn-primary" onclick="logout()">Log Out</button></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Individual Page Content Goes Here -->
+
+        <!-- Add New Customer Card -->
+ <button type="button" class="collapsible">Customer</button>
+        <div id="customerDiv" class="formContent">
+            <div class="card mx-auto">
+                <div class="card-body">
+                    <form>
+                        <h3>Add New Customer</h3>
+                        <div class="form-group">
+                            <label for="customerName">Customer Name</label>
+                            <input type="text" class="form-control" id="customerName" placeholder="Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="customerAddress">Address</label>
+                            <input type="text" class="form-control" id="customerAddress" placeholder="1234 Main St">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="customerCity">City</label>
+                                <input type="text" class="form-control" id="customerCity" placeholder="City">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label for="customerState">State</label>
+                                <input type="text" class="form-control" id="customerState" placeholder="State">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label for="customerZip">Zip Code</label>
+                                <input type="text" class="form-control" id="customerZip" placeholder="Zip Code">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="customerPhone">Phone Number</label>
+                            <input type="text" class="form-control" id="customerPhone" placeholder="555 555 5555">
+                        </div>
+                        <button id="addNewCustomerButton" type="submit" class="btn btn-primary" >Add New Customer</button>
+                        <button type="reset" class="btn btn-secondary">Cancel</button>
+                    </form>
+                    <br><hr><br>
+                    <form>
+                        <h4>Deactivate Customer</h4>
+                        <div class="form-row">
+                            <div class="form-group col-md-3">
+                                <label for="currCustomers">Current Customers</label>
+                                <select id="currCustomers" class="form-control">
+                                    
+                                </select>
+                            </div>
+                        </div>
+                        <button  type="button" class="btn btn-primary" data-toggle="modal" data-target="#deactivateModal">
+                            Deactivate
+                        </button>
+                    </form>
+                    <div class="modal fade" id="deactivateModal" tabindex="-1" role="dialog" aria-labelledby="newAnnouncementModal" aria-hidden="true">
+                        <div class="modal-dialog modal-sm" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deactivateModalLabel">Deactivate Customer?</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">x</span>
+                                    </button>
+                                </div>
+                                <div class="modal-footer">
+                                    <form>
+                                        <button id="deactivateCustomerButton" type="submit" class="btn btn-primary" onclick="deactivateCustomer();">Yes</button>
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <br>
+
+<!-- Add New Truck Card -->
+    <button type="button" class="collapsible">Truck</button>
+    <div id="addTruckDiv" class="formContent">
+          <div class="card mx-auto">
+            <div class="card-body">
+                <form>
+                    <h3>Add New Truck</h3>
+                    <div class="form-group">
+                        <label for="truckNumber">Truck Number</label>
+                        <input type="text" class="form-control" id="truckNumber" placeholder="Truck Number">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="truckVIN">VIN</label>
+                            <input type="text" class="form-control" id="truckVIN" placeholder="VIN">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="truckLicensePlate">License Plate</label>
+                            <input type="text" class="form-control" id="truckLicensePlate" placeholder="License Plate">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <label for="truckMaxCoops">Maximum Coops</label>
+                            <input type="number" class="form-control" id="truckMaxCoops" placeholder="0">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="inputTransmission">Transmission</label>
+                            <select id="inputTransmission" class="form-control">
+                                <option selected>Automatic</option>
+                                <option>Manual</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    
+
+
+                    <button type="submit" class="btn btn-primary" id="addTruckButton">Add New Truck</button>
+                    <button type="reset" class="btn btn-secondary">Cancel</button>
+                </form>
+                <br><hr><br>
+                    <form>
+                        <h4>Manage Trucks</h4>
+                        <div class="form-row">
+                            <div class="form-group col-md-3">
+                                <label for="activeTrucks">Active Trucks</label>
+                                <select id="activeTrucks" class="form-control">
+                                </select>
+                            </div>
+                            
+                                
+                           <div class="form-group col-md-3">
+                            <label for="inactiveTrucks">Inactive Trucks</label>
+                                <select id="inactiveTrucks" class="form-control">
+                                </select>
+                          </div>
+                        </div>
+                            
+                        <button id= "deactivateTruckButton" type="button" class="btn btn-primary">
+                            Deactivate
+                        </button>
+                        
+                        <button type="button" id="activate" class="btn btn-primary">
+                            Reactivate
+                        </button>
+                    </form>
+                    
+ 
+
+                <br>
+                
+                                            <!-- Current Trucks Card-->
+        <div class="card mx-auto">
+            <div class="card-body">
+                <h3>Current Trucks</h3>
+                <div class="container mt-3">
+                    <input class="form-control" id="myInput" type="text" placeholder="Search by Truck VIN, or License Plate #">
+                    <br>
+                    <div class="table-responsive" id="truckTable">
+                        <table id = "truckTableReal" class="table table-bordered table-hover" >
+                            <thead>
+                                <tr>
+                                    <th>Truck #</th>
+                                    <th>VIN</th>
+                                    <th>License Plate</th>
+                                    <th>Max Coops</th>
+                                    <th class="text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="myTable">
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <br>
+
+<button type="button" class="collapsible">Driver</button>
+    <div id = "driverDiv" class="formContent">
+        <div class="card mx-auto">
+            <div class="card-body">
+                <form>
+                    <h3>Add New Driver</h3>
+
+                    <label for="driverUser">Driver</label>
+                            <select id="driverUser" class="form-control">
+                                
+                            </select>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="driverBirth">Date of Birth</label>
+                            <input type="date" class="form-control" id="driverBirth" placeholder="DOB" required>
+                            
+                        </div>
+                    <div class="form-group col-md-3">
+                            <label for="driverLT">License Type</label>
+                            <select id="driverLT" class="form-control">
+                                <option selected>CDL</option>
+                                <option>NON-CDL</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="driverLE">Date of License Expiration</label>
+                            <input type="date" class="form-control" id="driverLE" placeholder="DOB" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="driverME">Date of Medical Expiration</label>
+                            <input type="date" class="form-control" id="driverME" placeholder="DOB" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="driverLN">License number</label>
+                            <input type="text" class="form-control" id="driverLN" placeholder="123456789">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="driverState">License State</label>
+                            <input type="text" class="form-control" id="driverState" placeholder="State">
+                        </div>
+                    <div class="form-group col-md-3">
+                            <label for="driverTransmission">Transmission</label>
+                            <select id="driverTransmission" class="form-control">
+                                <option selected>Automatic</option>
+                                <option>Manual</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="driverPhone">Phone Number</label>
+                        <input type="text" class="form-control" id="driverPhone" placeholder="555 555 5555">
+                    </div>
+
+                    <button type="button" class="btn btn-primary" id="addDriverButton">Add New Driver</button>
+                    <button type="reset" class="btn btn-secondary">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+        <br>
+
+
+    </div>
+
+        <!-- END OF INDIVIDUAL PAGE CONTENT -->
+
+
+    </div>
+</div>
+
+<!-- Needed for bootstrap -->
+
+<!-- Popper.JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+
+
+<!-- Collapse/Open Sidebar -->
+<script type="text/javascript">
+ //On Load Functions
+    $(document).ready(function () {
+        $('#sidebarCollapse').on('click', function () {
+            $('#sidebar').toggleClass('active')
+        });
+        getTrucks();
+        driverDropDown();
+        loadCustomerDropDown();
+ });
+</script>
+
+<!-- Search Table functionality -->
+<script>
+    $(document).ready(function(){
+        $("#myInput").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#myTable tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+</script>
+
+<script>
+ //Code for openning and Closing Collapsible Buttons
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
+}
+</script>
+<script>
+ function reload(){
+    var container = document.getElementById("driverDiv");
+    var content = container.innerHTML;
+    container.innerHTML= content; 
+    
+   //this line is to watch the result in console , you can remove it later	
+    //console.log("Refreshed");
+}
+//Adding a New Driver
+ $(function(){
+    $('#addDriverButton').click(function(e){
+        e.preventDefault();
+        addDriver();
+        e.preventDefault();
+        clearDropDown("driverUser");
+        driverDropDown();
+        //reload();
+        alert("Driver Added!");
+
+  
+    });
+});
+ //Deactivate Truck
+  $(function(){
+    $('#deactivateTruckButton').click(function(e){
+        e.preventDefault();
+        deactivateTruck();
+        e.preventDefault();
+        clearDropDown("activeTrucks");
+        clearDropDown("inactiveTrucks");
+        var table = document.getElementById("truckTableReal");
+        for(var i = table.rows.length - 1; i > 0; i--)
+        {
+            table.deleteRow(i);
+        }
+        getTrucks();
+
+        
+
+  
+    });
+});
+    //activate Truck
+    $(function(){
+    $('#activate').click(function(e){
+        e.preventDefault();
+        activateTruck();
+        e.preventDefault();
+        clearDropDown("activeTrucks");
+        clearDropDown("inactiveTrucks");
+        var table = document.getElementById("truckTableReal");
+        for(var i = table.rows.length - 1; i > 0; i--)
+        {
+            table.deleteRow(i);
+        }
+        getTrucks();
+        
+  
+    });
+});
+    //Add Truck
+    $(function(){
+    $('#addTruckButton').click(function(e){
+        e.preventDefault();
+        addTruck();
+        e.preventDefault();
+        clearDropDown("activeTrucks");
+        clearDropDown("inactiveTrucks");
+        var table = document.getElementById("truckTableReal");
+        //or use :  var table = document.all.tableid;
+        for(var i = table.rows.length - 1; i > 0; i--)
+        {
+            table.deleteRow(i);
+        }
+        getTrucks();
+        //reload("addTruckDiv");
+        alert("New Truck Added!");
+        
+
+  
+    });
+});
+    
+
+      //Add Customer
+      $(function(){
+    $('#addNewCustomerButton').click(function(e){
+        e.preventDefault();
+        addCustomer();
+        e.preventDefault();
+        clearDropDown("currCustomers");
+        loadCustomerDropDown();
+        reload("customerDiv");
+        alert("New Customer Added!");
+        
+
+  
+    });
+});
+      
+
+</script>
+<script>
+ //Remove Contents of a Given Drop Down
+ function clearDropDown(dropDown){
+          var selectobject = document.getElementById(dropDown);
+                  for (var i=selectobject.length; i>=0; i--) {
+                          selectobject.remove(i);
+                  }
+ }
+ 
+</script>
+<script>
+ //Get and Populate Truck Table and Drop Downs
+ function getTrucks(){
+            $.ajax({
+                type: "GET",
+                url: "../truck/read.php", //php file goes here
+
+            });
+            
+             $.getJSON("../truck/read.php", function (data) {
+            
+            var trucks = '';
+            var activeTrucks = '';
+            var inactiveTrucks = '';
+
+            $.each(data.records, function(key,val){
+            var truck_status = val.truck_status;
+            var truck_vin = val.truck_vin;
+            var truck_plate_number =   val.truck_plate_number;
+            var truck_transmition = val.truck_transmition;
+            var truck_number = val.truck_number;
+            var truck_max_coops = val.truck_max_coops;
+            var activeColor = '';
+            var truck_id = val.truck_id;
+            
+            if (truck_status == 1){
+                activeColor = 'active';
+                activeTrucks += "<option value = " + truck_id +"> Truck " + truck_number +"</option>	";
+            }
+            else{
+             inactiveTrucks += "<option value = " + truck_id +"> Truck " + truck_number +"</option>	";
+            }
+
+            trucks +='<tr> <td>' + truck_number + '</td> <td>'+ truck_vin +'</td> <td>'+ truck_plate_number +'</td> <td>'+truck_max_coops + '</td> <td class="text-center"> <div class="btn-group-toggle " data-toggle="buttons"> <label class="btn  btn-circle btn-sm '+  activeColor + '"> <input type="checkbox" onclick="test();" checked autocomplete="off"> </label> </div> </td> </tr>	';
+            
+            
+            
+
+        
+           });
+ 
+           $('#myTable').append(trucks);
+           $('#inactiveTrucks').append(inactiveTrucks);
+           $('#activeTrucks').append(activeTrucks);
+       });
+  
+ }
+</script>
+<script>
+ 
+ //Get and Populate Driver Drop Down
+ function driverDropDown(){
+
+                  
+                  
+                                 $.ajax({
+                type: "GET",
+                url: "../driver/readDrivers.php", //php file goes here
+
+            });
+  
+        
+           $.getJSON("../driver/readDrivers.php", function (data) {
+            
+            var drivers = '';
+
+            $.each(data.records, function(key,val){
+            var user_id = val.user_ID;
+            var driverName = val.driverName;
+
+            drivers +="<option value = " + user_id +">" + driverName +"</option>	";
+            
+            
+            
+
+
+           });
+
+           $('#driverUser').append(drivers);
+           //alert(drivers);
+       });
+ }
+</script>
+
+<script>
+ //Get and Populate Customer Drop Down
+ function loadCustomerDropDown(){
+                                   $.ajax({
+                type: "GET",
+                url: "../store/getStores.php.php", //php file goes here
+
+            });
+              $.getJSON("../store/getStores.php", function (data) {
+            
+            var stores = '';
+
+            $.each(data.records, function(key,val){
+            if (val.active == 1){
+            var store_id = val.store_id;
+            var store_name = val.store_name;
+
+            stores +="<option value = " + store_id +">" + store_name +"</option>	";
+            }
+            
+            
+
+        
+           });
+        
+           $('#currCustomers').append(stores);
+       });
+ }
+</script>
+
+
+</body>
+	<script type="text/javascript">
+	 	function startup(){
+			loggedin();
+			checkPermissions("Sales Manager");
+		}
+        </script>
+
+</html>
+

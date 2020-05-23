@@ -1,0 +1,1124 @@
+CREATE DEFINER=`barret`@`localhost` PROCEDURE `addArrange`(btID int, sID int, weight_per decimal(3,2),
+ 															spec_price decimal(3,2))
+ BEGIN
+ 
+ if exists (select bird_type_id, store_id from Price_Arrangement
+ 			where bird_type_id = btID and
+ 					store_id = sID)
+ then
+ 	signal sqlstate '45000'
+     set message_text = 'Special Pricing for this customer already exists. Please use EDIT instead.';
+ 
+ elseif
+ 	weight_per = 0 or
+     weight_per = ' '
+ then
+ 	set weight_per = NULL;
+ 	insert into Price_Arrangement(bird_type_id, store_id, weight_discount, special_price, last_update)
+     values(btID, sID, weight_per, spec_price, current_timestamp());
+ 
+ elseif
+ 	spec_price = 0 or
+     spec_price = ' '
+ then
+ 	set spec_price = NULL;
+ 	insert into Price_Arrangement(bird_type_id, store_id, weight_discount, special_price, last_update)
+     values(btID, sID, weight_per, spec_price, current_timestamp());
+ 
+ else
+ 	insert into Price_Arrangement(bird_type_id, store_id, weight_discount, special_price, last_update)
+     values(btID, sID, weight_per, spec_price, current_timestamp());
+     
+ 
+ end if;
+ 
+ END
+
+=============================================================================================================
+
+CREATE DEFINER=`barret`@`localhost` PROCEDURE `addBird`(bird varchar(50), unit enum('pound','head'), price decimal(3,2))
+ BEGIN
+ 
+ if exists (select bird_desc from Bird_type where bird_desc = bird)
+ then
+ 	signal sqlstate '45000'
+     set message_text = 'Bird type already in database';
+ else
+ 	insert into Bird_type(bird_desc, unit_sold, default_price)
+     values (bird, unit, price);
+ end if;
+ 
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`barret`@`localhost` PROCEDURE `addFarm`(in farmname varchar(60), in farmaddress varchar(60), in farmcity varchar(60))
+ BEGIN
+ 	
+ if exists(select f.farm_name from chickens.Farm f where farm_name = farmname)
+ 	then 
+     signal sqlstate '45000'
+     set message_text = 'Farm already in database';
+ else 
+ 	insert into Farm(farm_name, farm_address, farm_city)
+ 	values (farmname, farmaddress, farmcity);
+ END if;
+ 
+ end
+
+=============================================================================================================
+
+CREATE DEFINER=`barret`@`localhost` PROCEDURE `addFlock`(farmid int, buildingid int, numHatchlings int, 
+ 			delivDate varchar(14), btid int)
+ BEGIN
+ if exists (select farm_id, building_id
+ 			from Flock
+ 				join Farm using (farm_id)
+                 join Building using (building_id)
+ 			where farm_id = farmid and
+ 					building_id = buildingid and
+                     hatchlings = numHatchlings and
+ 					hatchlings is not NULL)
+ then
+ 	signal sqlstate '45000'
+     set message_text = 'This building already filled. Please select a different building';
+ 
+ else
+ 	insert into Flock(bird_type_id, farm_id, building_id, delivery_date, hatchlings)
+ 	values (btid, farmid, buildingid, str_to_date(delivDate, "%m-%d-%y"), numHatchlings);
+     
+ end if;
+ 
+ END
+
+==========================================================================================================
+
+CREATE DEFINER=`barret`@`localhost` PROCEDURE `addManager`(manName varchar(60), manPhone bigint(14))
+ BEGIN
+ 
+ if exists (select m.manager_name, m.manager_phone 
+ 			from Manager m 
+             where manager_name = manName and
+ 					manager_phone = manPhone)
+ 	then
+ 	signal sqlstate '45000'
+     set message_text = 'Manager already exists.';
+ else
+ 	insert into Manager(manager_name, manager_phone)
+     values(manName, manPhone);
+ end if;
+ 
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`barret`@`localhost` PROCEDURE `addOrder`(numberCoops int, delivDate date, storeID int, flockID int, invoiceID int)
+ BEGIN
+ 
+ if exists (select delivery_date, store_id, flock_id 
+ 			from Orders 
+ 			where delivery_date = delivDate and
+ 					store_id = storeID and
+                     flock_id = flockID)
+ then
+ 	signal sqlstate '45000'
+ 	set message_text = 'Order already exists for this date.';
+ else
+     insert into Orders(number_coops, delivery_date, store_id, flock_id, invoice_id)
+     values (numberCoops, delivDate, storeID, flockID, invoiceID);            
+ end if;
+ 
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`barret`@`localhost` PROCEDURE `addStore`(storeName varchar(60), managerID int, storePhone bigint(14), 
+ 								storeAddress varchar(60), storeCity varchar(60))
+ BEGIN
+ 
+ if exists (select s.store_name, s.store_address, s.store_city
+ 			from Store s
+             where store_name = storeName and
+ 					store_address = storeAddress and
+                     store_city = storeCity)
+ 	then 
+ 		signal sqlstate '45000'
+         set message_text = 'Store already exists.';
+ else
+     insert into Store(store_name, manager_id, store_phone, store_address, store_city, active)
+     values (storeName, managerID, storePhone, storeAddress, storeCity, TRUE);
+ end if;
+ 
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`barret`@`localhost` PROCEDURE `addTrailer`(company varchar(45), trailerNum int)
+ BEGIN
+ 
+ insert into Trailer(company,trailer_number)
+ values (company, trailernum);
+ 
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`barret`@`localhost` PROCEDURE `addTrailerWeight`(trailID int, emptyWeight int, loaded int, 
+ 									coopsIn int, coopsOut int, delvDate varchar(45))
+ BEGIN
+ 
+ update Trailer
+ 	set trailer_weight_empty = emptyWeight,
+ 		trailer_weight_loaded = loaded,
+         num_coops_in = coopsIn,
+         num_coops_out = coopsOut
+ where trailer_id = trailID and
+ 		rec_date = str_to_date(delivDate, "%m-%d-%y");
+ 
+ 
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`connor`@`localhost` PROCEDURE `augmentStatus`(In id int)
+ BEGIN
+ 	select truck_status into @stat
+     from chickens.Truck 
+     where truck_id = id;
+     
+     if @stat = 1 THEN
+     update chickens.Truck
+     Set truck_status = 0
+     Where truck_id = id;
+     
+     else 
+ 	update chickens.Truck
+     Set truck_status = 1
+     Where truck_id = id;
+     END IF;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`barret`@`localhost` PROCEDURE `birdList`()
+ BEGIN
+ 
+ select bird_type_id, bird_desc
+ from Bird_type;
+ 
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`barret`@`localhost` PROCEDURE `calcPrice`(orderID int)
+ BEGIN
+ 
+ declare gross varchar(45);
+ declare net int;
+ declare price double(5,2);
+ declare endWeight double(7,3);
+ declare amountdue double(10,2);
+ 
+ select unit_sold
+ into gross
+ from Orders
+ 	join Flock using (flock_id)
+     join Bird_type using (bird_type_id)
+ where order_id = orderID;
+ 
+ select unit(orderID), checkSpecPrice(orderID), weightDisc(orderID)
+ into net, price, endWeight;
+ 
+ if (gross = 'pound')
+ then
+ set amountdue = net * price * endWeight;
+ 
+ else
+ set amountdue = net * price;
+ end if;
+ 
+ select amountdue;
+ 
+ 
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`connor`@`localhost` PROCEDURE `changeStatus`(In vin VARCHAR(255))
+ BEGIN
+ 	select @stat = truck_status
+     from chickens.Truck 
+     where truck_vin = vin;
+     if @stat = 1 THEN
+     update chickens.Truck
+     Set truck_status = 0
+     Where truck_vin = vin;
+     
+     else 
+ 	update chickens.Truck
+     Set truck_status = 1
+     Where truck_vin = vin;
+     END IF;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`barret`@`localhost` PROCEDURE `createInv`(invDate date, invNum int)
+ BEGIN
+ 
+ if exists (select invoice_date, invoice_number
+ 			from Invoice
+ 			where invoice_date = invDate and
+ 					invoice_number = invNum)
+ then
+ 	signal sqlstate '45000'
+     set message_text = 'Invoice already exists';
+ else
+ 	insert into Invoice(invoice_date, invoice_number)
+     values (invDate, invNum);
+ end if;
+     
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`cassie`@`localhost` PROCEDURE `createUserProcedure`(
+ 	fname VARCHAR(45),
+     lname VARCHAR(45),
+     username VARCHAR(45),
+     password VARCHAR(45),
+     permission VARCHAR(45))
+ BEGIN
+ 	DECLARE message VARCHAR(100);
+     DECLARE userid_result INT(11);
+     DECLARE created_salt VARCHAR(6);
+     DECLARE hashed_password VARCHAR(200);
+     
+ 	SELECT user_ID into userid_result FROM User WHERE name_string = username;
+ 
+ 	IF userid_result IS NOT NULL THEN
+ 		SELECT "fail" AS message;
+     ELSE
+ 		SELECT substring(sha1(rand()), 1, 6) INTO created_salt;
+ 		SELECT PASSWORD(concat(password, created_salt)) INTO hashed_password;
+ 		INSERT INTO User (name_string, auth_string, permission_set, 
+ 							first_name, last_name, salt, active_status)
+ 				VALUES
+ 						(username, hashed_password, permission,
+ 						fname, lname, created_salt, 1);
+ 	SELECT "success" INTO message;
+     END IF;
+     select message;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`cassie`@`localhost` PROCEDURE `deleteFromDeliveries`(id INT)
+ BEGIN
+ 	DECLARE num INT;
+     DECLARE del_id INT;
+     DECLARE del_ord_id INT;
+     DECLARE del_num_coops INT;
+     DECLARE ord_num_coops INT;
+     DECLARE tr_dr_id INT;
+     
+     SELECT delivery_id INTO del_id FROM Delivery_Order WHERE order_id = id;
+     IF del_id IS NOT NULL THEN
+ 		DELETE FROM Delivery_Order WHERE delivery_id = del_id AND order_id = id;
+         SELECT number_coops INTO ord_num_coops FROM Orders WHERE order_id = id;
+         SELECT total_coops INTO del_num_coops FROM Delivery WHERE delivery_id = del_id;
+         IF del_num_coops - ord_num_coops = 0 THEN
+ 			SELECT truck_driver_id INTO tr_dr_id FROM Delivery WHERE delivery_id = del_id;
+ 			DELETE FROM Delivery WHERE delivery_id = del_id;
+             IF (SELECT COUNT(*) FROM Delivery WHERE truck_driver_id = tr_dr_id) = 0 THEN
+ 				DELETE FROM Truck_Driver WHERE truck_driver_id = tr_dr_id;
+ 			END IF;
+ 		ELSE 
+ 			UPDATE Delivery SET total_coops = (del_num_coops - ord_num_coops) WHERE delivery_id = del_id;
+ 		END IF;
+ 	END IF;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`cassie`@`localhost` PROCEDURE `deleteOrderFromDeliveries`(id INT)
+ BEGIN
+ 	DECLARE del_id INT;
+     
+     SELECT delivery_id INTO del_id FROM Delivery_Order WHERE order_id = id;
+     IF del_id IS NOT NULL THEN
+ 		SELECT * FROM Truck;
+     END IF;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`cassie`@`localhost` PROCEDURE `deleteRoute`(in_truck_driver_id INT)
+ BEGIN
+ 	SET SQL_SAFE_UPDATES = 0;
+ 	DELETE FROM Delivery_Order WHERE delivery_id IN (SELECT delivery_id FROM Delivery WHERE truck_driver_id = in_truck_driver_id);
+     DELETE FROM Delivery WHERE truck_driver_id = in_truck_driver_id;
+     DELETE FROM Truck_Driver WHERE truck_driver_id = in_truck_driver_id;
+     SET SQL_SAFE_UPDATES = 1;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`riddhi`@`localhost` PROCEDURE `deleteUser`(IN userID int)
+ BEGIN
+ DELETE 
+ FROM User 
+ WHERE user_ID = userID;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`barret`@`localhost` PROCEDURE `editArrange`(arrID int, weight decimal(3,2), price decimal(3,2))
+ BEGIN
+ 
+ if exists(select price_arrangement_id from Price_Arrangement where price_arrangement_id = arrID)
+ then
+ 	if (weight = 0)
+ 	then
+ 		set weight = NULL;
+ 		update Price_Arrangement
+ 		set weight_discount = weight,
+ 			special_price = price,
+ 			last_update = current_timestamp()
+ 		where price_arrangement_id = arrID;
+     
+     elseif (price = 0)
+     then
+ 		set price = NULL;
+ 		update Price_Arrangement
+ 		set weight_discount = weight,
+ 			special_price = price,
+ 			last_update = current_timestamp()
+ 		where price_arrangement_id = arrID;
+     
+     elseif (weight = 0 and price = 0)
+     then
+ 		delete from Price_Arrangement
+         where price_arrangement_id = arrID;
+         
+ 	else 
+ 		update Price_Arrangement
+ 		set weight_discount = weight,
+ 			special_price = price,
+ 			last_update = current_timestamp()
+ 		where price_arrangement_id = arrID;
+         
+ 	end if;
+     
+ else
+ 	signal sqlstate '45000'
+     set message_text = 'Special pricing for this customer does not exist. Please use Add Special Price.';
+ 
+ end if;
+ 
+ 
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`riddhi`@`localhost` PROCEDURE `getActiveUsers`()
+ BEGIN
+  SELECT user_ID,name_string, first_name, last_name, permission_set, active_status 
+  FROM User 
+  WHERE active_status = 1;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`cassie`@`localhost` PROCEDURE `getAssignedDeliveryInformation`(in_truck_driver_id INT)
+ BEGIN
+ 	SELECT de.stop_in_route as stop_number, de.total_coops as total_coops,
+ 		   s.store_name as store_name, s.store_address as store_address, s.store_city as store_city, 
+            s.store_state as store_state, s.store_phone as store_phone, de.store_id as store_id
+     FROM Delivery de
+     JOIN Store s USING (store_id)
+     WHERE de.truck_driver_id = in_truck_driver_id
+     ORDER BY de.stop_in_route;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`cassie`@`localhost` PROCEDURE `getCurrentDate`()
+ BEGIN
+ 	SELECT CAST(CONVERT_TZ(NOW(), '+00:00', '-05:00') AS DATE) AS currdate;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`barret`@`localhost` PROCEDURE `getCurrentOrders`()
+ BEGIN
+ 
+ select s.store_name as 'store', o.number_coops as 'coops', b.bird_desc as 'bird', 
+ 		date_format(o.delivery_date, "%m-%d-%y") as 'date', o.order_id as 'id', o.flock_id
+ from Orders o
+ 	join Store s using (store_id)
+     join Flock f using (flock_id)
+     join Bird_type b using (bird_type_id)
+ order by store desc;
+ 
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`riddhi`@`localhost` PROCEDURE `getDeliveriesforTD`( IN driverID int )
+ BEGIN
+ select d.delivery_id
+ from Truck_Driver td
+          join Delivery d using (truck_driver_id)
+ where td.driver_id = (select driver_id from Driver where user_id = driverID) and td.date_driven = curdate();
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`riddhi`@`localhost` PROCEDURE `getdeliveryDetailsTD`(IN delivery_ID int)
+ BEGIN
+ select o.number_coops, b.bird_desc
+ from Delivery_Order dlo
+     join Orders o using(order_id)
+ 	join Flock f using(flock_id)
+ 	join Bird_type b using(bird_type_id)
+ where dlo.delivery_id = delivery_ID;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`cassie`@`localhost` PROCEDURE `getDeliveryInformation`(in_truck_driver_id INT)
+ BEGIN
+ 	SELECT d.first_name as first_name, d.last_name as last_name, t.truck_number as truck_number,
+ 		   de.stop_in_route as stop_number, sum(o.number_coops) as total_coops,
+            o.store_id as store_id, s.store_name as store_name, s.store_address as store_address,
+            s.store_city as store_city, s.store_state as store_state, s.store_phone as store_phone
+ 	FROM Truck_Driver td
+     JOIN Driver d USING (driver_id)
+     JOIN Truck t USING (truck_id)
+     JOIN Delivery de USING (truck_driver_id)
+     JOIN Delivery_Order do USING (delivery_id)
+     JOIN Orders o USING (order_id)
+     JOIN Store s USING (store_id)
+     WHERE td.truck_driver_id = in_truck_driver_id
+     AND td.date_driven = getTomorrowsDate()
+     GROUP BY store_id;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`riddhi`@`localhost` PROCEDURE `getDeliveryStoreInfoTD`(IN delivery_ID int)
+ BEGIN
+ select o.delivery_date,s.store_name, s.store_address
+ from Delivery_Order dlo
+      join Orders o using(order_id)
+      join Store s using(store_id)
+ where dlo.delivery_id = delivery_ID
+ limit 1;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`barret`@`localhost` PROCEDURE `getFarm`()
+ BEGIN
+ 	select f.farm_id, f.farm_name, f.farm_address, f.farm_city
+ 	from chickens.Farm f;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`barret`@`localhost` PROCEDURE `getFlock`()
+ BEGIN
+ 
+ select fl.flock_id,f.farm_id, f.farm_name, b.building_id, b.building_number,b.building_floor,bt.bird_type_id, 
+         bt.bird_desc, fl.delivery_date, fl.hatchlings, fl.available
+ from Flock fl
+ 	join Farm f using (farm_id)
+     join Building b using (building_id)
+     join Bird_type bt using (bird_type_id);
+    
+     
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`riddhi`@`localhost` PROCEDURE `getInactiveUsers`()
+ BEGIN
+ SELECT user_ID,name_string, first_name, last_name, permission_set, active_status 
+ FROM User 
+ WHERE active_status = 0;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`maddy`@`localhost` PROCEDURE `getMessage`()
+ BEGIN
+ 	select u.name_string, m.content, m.timestamp
+     from Message m
+ 		join User u using (user_ID)
+ 	order by timestamp;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`riddhi`@`localhost` PROCEDURE `getmessagesforTD`()
+ BEGIN
+ select concat(u.first_name, " ", u.last_name) as name, m.content, m.date_created
+ from Message m 
+ 	 left join User u using (user_id)
+ where truckdriver_flag = 1 and DATE(m.date_created) = current_date();
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`barret`@`localhost` PROCEDURE `getStoreOrders`(storeID int)
+ BEGIN
+ 
+ select o.number_coops as 'coops', b.bird_desc as 'bird', 
+ 		date_format(o.delivery_date, "%m-%d-%y") as 'date'
+ from Orders o
+ 	join Flock f using (flock_id)
+     join Bird_type b using (bird_type_id)
+ where o.store_id = storeID;
+ 
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`cassie`@`localhost` PROCEDURE `getTomorrowsAssignedTruckDrivers`()
+ BEGIN
+ 	select t.truck_number, d.first_name, d.last_name, td.truck_driver_id
+ 	from Truck_Driver td
+ 	join Truck t using (truck_id)
+ 	join Driver d using (driver_id)
+ 	where td.date_driven = getTomorrowsDate();
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`cassie`@`localhost` PROCEDURE `getTomorrowsAvailableDrivers`(truckTrans VARCHAR(50))
+ BEGIN
+ 	IF truckTrans = "MANUAL" THEN
+ 		SELECT DISTINCT d.driver_id AS driver_id, d.first_name AS first_name, d.last_name AS last_name
+ 		FROM Driver d
+ 		LEFT JOIN Truck_Driver td USING (driver_id)
+ 		WHERE (td.date_driven != getTomorrowsDate()
+ 			   OR td.date_driven IS NULL)
+         AND d.driver_status = 1
+         AND d.transmission_type = "MANUAL";
+ 	ELSE 
+ 		SELECT DISTINCT d.driver_id AS driver_id, d.first_name AS first_name, d.last_name AS last_name
+ 		FROM Driver d
+ 		LEFT JOIN Truck_Driver td USING (driver_id)
+ 		WHERE (td.date_driven != getTomorrowsDate()
+ 			   OR td.date_driven IS NULL)
+         AND d.driver_status = 1;	
+ 	END IF;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`cassie`@`localhost` PROCEDURE `getTomorrowsAvailableTrucks`(driverTrans VARCHAR(50))
+ BEGIN
+ 	IF driverTrans = "MANUAL" THEN
+ 		SELECT DISTINCT t.truck_id AS id, t.truck_number AS truck_number, t.truck_transmission AS truck_transmission
+         FROM Truck t
+         LEFT JOIN Truck_Driver td USING (truck_id)
+ 			WHERE (td.date_driven != getTomorrowsDate()
+ 				   OR td.date_driven IS NULL)
+             AND t.truck_status = 1;
+ 	ELSE
+ 		SELECT DISTINCT t.truck_id AS id, t.truck_max_coops AS max_coops, t.truck_number AS truck_number, t.truck_transmission AS truck_transmission
+         FROM Truck t
+         LEFT JOIN Truck_Driver td USING (truck_id)
+ 			WHERE (td.date_driven != getTomorrowsDate()
+ 				   OR td.date_driven IS NULL)
+             AND t.truck_status = 1
+             AND t.truck_transmission = "AUTOMATIC";
+ 	END IF;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`cassie`@`localhost` PROCEDURE `getTomorrowsDate`()
+ BEGIN
+ 	SELECT CAST(CONVERT_TZ(NOW(), '+00:00', '-05:00') AS DATE) + INTERVAL 1 DAY AS currdate;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`cassie`@`localhost` PROCEDURE `getTomorrowsDeliveryList`()
+ BEGIN
+ 	SELECT d.first_name as first_name, d.last_name as last_name, t.truck_number as truck_number,
+ 		   td.truck_id as truck_id, td.driver_id as driver_id, td.truck_driver_id as truck_driver_id
+ 	FROM Truck_Driver td
+     JOIN Driver d USING (driver_id)
+     JOIN Truck t USING (truck_id)
+     WHERE td.date_driven = getTomorrowsDate();
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`cassie`@`localhost` PROCEDURE `getTomorrowsDeliveryOrders`()
+ BEGIN
+ SELECT s.store_name AS store_name, s.store_address AS store_address, 
+ s.store_city AS store_city, s.store_zip AS store_zip, s.store_state AS store_state,
+ s.store_phone AS store_phone, sum(o.number_coops) AS number_coops, s.store_id AS store_id
+ FROM Store s
+ JOIN Orders o USING (store_id)
+ LEFT JOIN Delivery_Order dos ON o.order_id = dos.order_id
+ WHERE o.delivery_date = getTomorrowsDate()
+ AND dos.order_id IS NULL
+ GROUP BY store_id;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`cassie`@`localhost` PROCEDURE `getTomorrowsIndividualOrders`(store INT)
+ BEGIN
+ 	SELECT o.number_coops AS number_coops, b.bird_desc AS bird_type
+     FROM Orders o
+     JOIN Flock f USING (flock_id)
+     JOIN Bird_type b USING (bird_type_id)
+     WHERE o.delivery_date = getTomorrowsDate()
+     AND o.store_id = store;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`riddhi`@`localhost` PROCEDURE `getUserByID`( IN userID int)
+ BEGIN
+ SELECT user_ID, name_string, first_name, last_name, permission_set, active_status
+ FROM   User
+ WHERE user_ID = userID;
+ 
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`riddhi`@`localhost` PROCEDURE `getUserInfo`()
+ BEGIN
+ SELECT user_ID, name_string, first_name, last_name, permission_set,active_status 
+ FROM User;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`barret`@`localhost` PROCEDURE `getWeights`(orderID int)
+ BEGIN
+ declare flID int;
+ declare w1 int;
+ declare w2 int;
+ declare coops int;
+ 
+ select flock_id, weight_1, weight_2, num_coops
+ into flID, w1, w2, coops
+ from Order_Weights
+ where order_weights_id in (select order_weights_id from Orders where order_id = orderID);
+ 
+ select f.farm_name as 'Farm', bt.bird_desc as 'Bird',
+ 		bird_weight(flID, w1, w2, coops) as 'Weight'
+ from Flock 
+ 	join Bird_type bt using (bird_type_id)
+     join Farm f using (farm_id)
+ where flock_id = flID;
+ 
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`cassie`@`localhost` PROCEDURE `insertDeliveryOrders`(in_delivery_id INT, in_store_id INT)
+ BEGIN
+ 	INSERT INTO Delivery_Order
+ 		(delivery_id, order_id)
+         SELECT in_delivery_id, o.order_id
+ 			FROM Orders o
+             WHERE o.delivery_date = getTomorrowsDate()
+             AND o.store_id = in_store_id;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`barret`@`localhost` PROCEDURE `recordIncomingWeight`(flID int, weight1 int, weight2 int,
+ 																		numCoops int, trailerNum int,
+                                                                         delivDate varchar(14))
+ BEGIN
+ 
+ 
+ insert into Trailer(trailer_number)
+ value (trailerNum);
+ 
+ insert into Order_Weights (weight_1, weight_2, num_coops, flock_id, trailer_id, delivery_date)
+ values (weight1, weight2, numCoops, flID, last_insert_id(), delivDate);
+ 
+ 
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`barret`@`localhost` PROCEDURE `recordIncomingWeight`(flID int, weight1 int, weight2 int,
+ 																		numCoops int, trailerNum int,
+                                                                         delivDate varchar(14))
+ BEGIN
+ 
+ 
+ insert into Trailer(trailer_number)
+ value (trailerNum);
+ 
+ insert into Order_Weights (weight_1, weight_2, num_coops, flock_id, trailer_id, delivery_date)
+ values (weight1, weight2, numCoops, flID, last_insert_id(), delivDate);
+ 
+ 
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`zach`@`localhost` PROCEDURE `removeOrder`(id INT)
+ BEGIN
+ 	CALL deleteFromDeliveries(id);
+ 	DELETE FROM chickens.Orders where order_id = id;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`barret`@`localhost` PROCEDURE `selectActiveStore`()
+ BEGIN
+ 
+ select store_id, store_name
+ from Store
+ where active = TRUE;
+ 
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`barret`@`localhost` PROCEDURE `selectBird`()
+ BEGIN
+ 
+ select flock_id, bird_desc, farm_name
+ from Bird_type
+ 	join Flock using (bird_type_id)
+     join Farm using (farm_id);
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`barret`@`localhost` PROCEDURE `selectFarm`(farmID int)
+ BEGIN
+ 	select f.farm_name, f.farm_address, f.farm_city
+ 	from chickens.Farm f
+     where f.farm_id = farmID;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`barret`@`localhost` PROCEDURE `selectOrder`()
+ BEGIN
+ 
+ select s.store_name, sum(o.number_coops)
+ from Orders o
+ 	join Store s using (store_id)
+ where o.delivery_date = (select curdate() +1)
+ group by s.store_name;
+ 
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`cassie`@`localhost` PROCEDURE `setUserInactive`(userid INT)
+ BEGIN
+ UPDATE User SET active_status = 0 WHERE user_id = userid;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`zach`@`localhost` PROCEDURE `showOrders`()
+ BEGIN
+ 
+ select s.store_name as 'store', o.number_coops as 'coops', b.bird_desc as 'bird', 
+ 		date_format(o.delivery_date, "%m-%d-%y") as 'date', o.order_id as 'id', o.flock_id
+ from Orders o
+ 	join Store s using (store_id)
+     join Flock f using (flock_id)
+     join Bird_type b using (bird_type_id)
+ where o.delivery_date >= curdate()
+ order by o.delivery_date, store desc;
+ 
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`connor`@`localhost` PROCEDURE `update_user`(in newPass VARCHAR(45), in userName VARCHAR(45))
+ BEGIN
+    Select @salt:=lpad(conv(floor(rand()*pow(36,6)), 10, 36), 4, 0);
+    select @saltPass := concat(newPass, salt);
+    Select @encrypPass := aes_encrypt(newPass, @salt);
+    update User
+ 	Set auth_sting = @encrypPass, salt = @salt
+     where name_string = userName;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`riddhi`@`localhost` PROCEDURE `updateUserInfo`(
+ uid int(11),
+ uname varchar(45),
+ userrole varchar(45),
+ fname varchar(45),
+ lname varchar(45),
+ userstatus smallint(1)
+ )
+ BEGIN
+ UPDATE chickens.User 
+ SET name_string = uname, permission_set = userrole,
+ first_name = fname, last_name = lname, active_status = userstatus
+ WHERE user_ID = uid;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`barret`@`localhost` FUNCTION `bird_weight`(orderID int) RETURNS double
+ BEGIN
+ 
+ declare total double;
+ declare numBirds int;
+ declare flID int;
+ declare weight1 int;
+ declare weight2 int;
+ declare numCoops int;
+ 
+ select o.flock_id, ow.weight_1, ow.weight_2, ow.num_coops
+ into flID, weight1, weight2, numCoops
+ from Orders o
+ 	join Order_Weights ow using (order_weights_id)
+ where order_id = orderID;
+ 
+ select fl.birds_per_coop
+ into numBirds
+ from Flock fl
+ 	join Bird_type using (bird_type_id)
+ where flock_id = flID;
+ 
+ set total = ((weight1 + weight2 - (numCoops * 15)) / numCoops ) / numBirds;
+ 
+ RETURN total;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`cassie`@`localhost` FUNCTION `changePassword`(in_username VARCHAR(45), in_current_password VARCHAR(45), in_new_password VARCHAR(45)) RETURNS varchar(45) CHARSET latin1
+ BEGIN
+ 	DECLARE message VARCHAR(45);
+     DECLARE userid INT;
+     DECLARE storedCurrentPassword VARCHAR(200);
+     DECLARE proposedCurrentPassword VARCHAR(200);
+     DECLARE setSalt VARCHAR(6);
+     SET message = "fail";
+     
+ 	SELECT user_ID INTO userid FROM User WHERE name_string = in_username;
+     SELECT auth_string INTO storedCurrentPassword FROM User WHERE user_ID = userid;
+     SELECT password(concat(in_current_password, salt)) INTO proposedCurrentPassword FROM User WHERE user_ID = userid;
+     SELECT salt INTO setSalt FROM User WHERE user_ID = userid;
+     
+     IF userid IS NOT NULL THEN
+ 		SELECT auth_string INTO storedCurrentPassword FROM User WHERE user_ID = userid;
+         IF storedCurrentPassword = proposedCurrentPassword THEN
+ 			IF in_current_password != in_new_password THEN
+ 				IF in_username != in_new_password THEN
+ 					UPDATE User SET auth_string = password(concat(in_new_password, setSalt)) WHERE user_ID = userid;
+ 					SET message = "success";
+                 ELSE
+ 					SET message = "Password cannot be the same as username.";
+                 END IF;
+             ELSE
+ 				SET message = "New password cannot be the same as current password.";
+             END IF;
+ 		ELSE
+ 			SET message = "Current password incorrect. Please try again.";
+         END IF;
+     ELSE
+ 		SET message = "Username does not exist.";
+     END IF;
+     
+     RETURN message;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`barret`@`localhost` FUNCTION `checkSpecPrice`(orderID int) RETURNS double
+ BEGIN
+ 
+ declare specPrice double(5,2);
+ declare regPrice double(5,2);
+ declare btID int;
+ declare sID int;
+ 
+ select store_id, bird_type_id
+ into sID, btID
+ from Orders
+ 	join Store using (store_id)
+     join Flock using (flock_id)
+ where order_id = orderID;
+ 
+ if exists (select store_id
+ 			from Price_Arrangement
+             where store_id = sID)
+             then
+ select default_price, special_price 
+ into regPrice, specPrice 
+ from Bird_type
+ 	left join Price_Arrangement using (bird_type_id)
+ where store_id = sID and
+ 		bird_type_id = btID;
+ else
+ set specPrice = NULL;
+ select default_price
+ into regPrice
+ from Bird_type
+ where bird_type_id = btID;
+ end if;
+ 
+ if (specPrice is not NULL)
+ then
+ 	return specPrice;
+ 
+ else
+ 	return regPrice;
+ 
+ end if;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`cassie`@`localhost` FUNCTION `getTomorrowsDate`() RETURNS date
+ BEGIN
+ 	RETURN CAST(CONVERT_TZ(NOW(), '+00:00', '-05:00') AS DATE) + INTERVAL 1 DAY;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`cassie`@`localhost` FUNCTION `insertDeliveryDriverTruckCombo`(in_truck_driver_id INT, stop_order INT, in_store_id INT) RETURNS int(11)
+ BEGIN
+ 	DECLARE in_total_coops INT;
+     SELECT sum(number_coops) INTO in_total_coops FROM Orders
+     WHERE delivery_date = getTomorrowsDate()
+     AND store_id = in_store_id;
+     INSERT INTO Delivery
+ 		(truck_driver_id, stop_in_route, store_id, total_coops)
+         VALUES
+         (in_truck_driver_id, stop_order, in_store_id, in_total_coops);
+ 	RETURN LAST_INSERT_ID();
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`cassie`@`localhost` FUNCTION `insertDriverTruckCombo`(in_driver_id INT, in_truck_id INT) RETURNS int(11)
+ BEGIN
+ 	INSERT INTO Truck_Driver
+ 		(date_driven, truck_id, driver_id)
+ 		VALUES
+ 		(getTomorrowsDate(), in_truck_id, in_driver_id);
+ 	RETURN LAST_INSERT_ID();
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`barret`@`localhost` FUNCTION `unit`(orderID int) RETURNS int(11)
+ BEGIN
+ 
+ declare totalPound int;
+ declare totalHead int;
+ declare numCoops int;
+ declare numBirds int;
+ declare weight double(5,2);
+ declare btID int;
+ 
+ select number_coops, birds_per_coop, bird_weight(orderID), bird_type_id
+ into numCoops, numBirds, weight, btID
+ from Orders
+ 	join Flock using (flock_id)
+ where order_id = orderID;
+ 
+ if ((select unit_sold from Bird_type where bird_type_id = btID) = 'pound')
+ then
+ 	set totalPound = round(numCoops * numBirds * weight);
+     return totalPound;
+ else
+ 	set totalHead = numCoops * numBirds;
+     return totalHead;
+ end if;
+ 
+ 
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`cassie`@`localhost` FUNCTION `user_login`(username VARCHAR(45),
+ 							password VARCHAR(45)) RETURNS int(11)
+ BEGIN
+ 
+ 	DECLARE current_user_id INT;
+     DECLARE hashed_password VARCHAR(100);
+     DECLARE user_salt VARCHAR(10);
+     DECLARE user_password VARCHAR(100);
+     SELECT user_ID INTO current_user_id FROM User
+ 		WHERE name_string = username;
+     
+     IF current_user_id IS NOT NULL THEN
+ 		SELECT password(concat(password, salt)) INTO hashed_password
+ 			FROM User WHERE user_ID = current_user_id;
+ 		SELECT auth_string INTO user_password FROM User
+ 			WHERE user_ID = current_user_id;
+             
+ 		IF hashed_password != user_password THEN
+ 			SET current_user_id = -1;
+ 		END IF;
+     ELSE
+ 		SET current_user_id = -1;
+ 	END IF;
+ 	
+ 	RETURN current_user_id;
+ END
+
+============================================================================================================
+
+CREATE DEFINER=`barret`@`localhost` FUNCTION `weightDisc`(orderID int) RETURNS int(11)
+ BEGIN
+ 
+ declare w1 int;
+ declare w2 int;
+ declare net int;
+ declare disc double;
+ declare tempWeight double;
+ declare btID int;
+ declare sID int;
+ 
+ select bird_type_id, store_id
+ into btID, sID
+ from Orders
+ 	join Flock using (flock_id)
+     join Store using (store_id)
+ where order_id = orderID;
+ 
+ select unit(orderID)
+ into tempWeight;
+ 
+ if exists(select weight_discount
+ 		from Price_Arrangement
+ 		where store_id = sID and bird_type_id = btID)
+ then
+ 		select weight_discount
+ 		into disc
+ 		from Price_Arrangement
+ 		where store_id = sID and bird_type_id = btID;
+ 
+ set net = disc;
+ 
+ else
+ 
+ set net = 1;
+ 
+ end if;
+ 
+ RETURN net;
+ END

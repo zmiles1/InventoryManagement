@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+        <script type='text/javascript' src='main.js'></script>
+	<script src='docCookies.js'></script>
+	<script src='script.js'></script>
+
+        <title>Simply Fowl | Shipments</title>
+
+        <!-- Bootstrap CSS CDN -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <!-- Our Custom CSS -->
+        <link rel="stylesheet" href="style.css" media="screen">
+	<link rel="stylesheet" href="print.css" media="print">
+
+        <!-- Font Awesome JS -->
+        <script src="https://kit.fontawesome.com/412b07d0f6.js" crossorigin="anonymous"></script>
+
+	<!--Cookies-->
+	<script src="docCookies.js"></script>
+	<script src="script.js"></script>
+</head>
+<body onload="startup()">
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-menu">
+            <nav id="sidebar" class="fixed">
+                <div class="sidebar-header"><h3 class="text-center">Simply Fowl</h3></div>
+                <ul class="list-unstyled componenets">
+                    <li><a href="saleshomepage.html"><i class="fas fa-home fa-fw"></i> Home</a></li>
+                    <li><a href="order.html"><i class="fas fa-box-open fa-fw"></i> Orders</a></li>
+                    <li><a href="dispatch.html"><i class="fas fa-truck fa-fw"></i> Dispatch</a></li>
+                    <li class="active"><a><i class="fas fa-briefcase fa-fw"></i> Shipments</a></li>
+                    <li><a href="maintenance.html"><i class="fas fa-wrench fa-fw"></i> Maintenance</a></li>
+                    <li id="adminsub"><a href="#adminSubMenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                        <i class="fas fa-user-cog fa-fw"></i> Admin</a>
+                        <ul class="collapse list-unstyled" id="adminSubMenu">
+                            <li><a href="FlockManager.html">Flock Manager</a></li>
+                            <li><a href="accountsmanagement.html">Manager Accounts</a></li>
+                        </ul></li>
+		<li><a href="changePassword.html"><i class="fas fa-cog fa-fw"></i> Change Password </a></li>
+		</ul></nav></div>
+
+        <!-- Main Page Content -->
+
+        <div id="content">
+            <!-- Main Page Header -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+                    <button type="button" id="sidebarCollapse" class="btn"><i class="fas fa-bars"></i></button>
+                    <h4 class="nav navbar-nav navbar-center">Shipments</h4>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><button type="button" class="btn btn-primary" onclick="logout()">Log Out</button></li></ul></div></nav>
+            
+            <!-- Individual Page Content Goes Here -->
+            
+            <div class="card mx-auto">
+                <div class="card-body">
+                    <form id="weightForm" class="was-validated" action="#" method="post">
+                        <h3 class="text-center">Incoming Weights</h3>
+                        <div class="form-group">
+                            <label for="delvDate">Delivery Date: </label>
+                            <input type="date" class="date" id="delvDate" placeholder="MM/DD/YY" name="delvDate" required />
+                            <div class="invalid-feedback">Please Enter Delivery Date</div></div>
+                        <div class="form-group">
+                            <select class="trailerWeight" id="trailerWeight" required>
+			    </select>
+                            <div class="invalid-feedback">Please Select a Flock</div>
+                            <input type="text" class="numbers" id="weight1" placeholder="Weight #1" size="4" required />
+                            <div class="invalid-feedback">Please Enter Weight</div>
+                            <input type="text" class="numbers" id="weight2" placeholder="Weight #2" size="4" />
+                            <input type="text" class="numbers" id="numCoops" placeholder="# of Coops" size="4" required />
+                            <div class="invalid-feedback">Please Enter # of Coops</div>
+                            <input type="text" class="numbers" id="trailer" placeholder="Trailer #" size="4" required />
+                            <div class="invalid-feedback">Please Enter Trailer #</div>
+                            <button id="submit" class="btn btn-primary" type="button" onclick="submitWeight()">Submit</button>
+
+
+                        </div>
+                    </form>
+                </div>
+                </div>
+	<br>
+
+	<div id="dispatches" class="card mx-auto">
+            <div class="card-body">
+		<h4 class="card-title">Current Invoices</h4>
+		<input class="form-control" id="myInput" type="text" placeholder="Search Invoice">
+		<br>
+                <!-- List of Invoices in Route assigned to truck driver -->
+                <div id="shipmentList" class="table-responsive">
+			<table class="table table-bordered table-hover">
+				<thead>
+				<tr>
+					<th>Invoice #</th>
+					<th>Customer</th>
+					<th>Date</th>
+					<th>View</th>
+				</tr>
+				</thead>
+				<tbody id="shipmentListBody">
+				</tbody>
+			</table>
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="shipmentModal" tabindex="-1" role="dialog" aria-labelledby="invoiceModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+			<div class="print">
+                        <div class="modal-header">
+		            <h5 class="modal-title" id="shippingModalLabel">Shipment Details</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+
+                        <!-- Individual Invoice Details will be filled in here -->
+                        <div id="invoicePopup" class="modal-body">
+			    <h5>Invoice ID:</h5>
+			    <p id="popupid"></p>
+			    <hr>
+                            <h5>Customer:</h5>
+                            <p id="popupCustomer"></p>
+                            <hr>
+                            <h5>Date:</h5>
+                            <p id="popupDate"></p>
+
+                            <hr>
+
+                            <!-- Table for Invoices in Dispatch -->
+                            <h5>Shipment Details</h5>
+                            <div class="table-responsive" id="dispatchInvoiceTable">
+                                <table class="table table-bordered table-hover" >
+                                    <thead>
+                                    <tr>
+                                        <th>Order Number</th>
+                                        <th># Coops</th>
+					<th>Chicken Type</th>
+                                    </tr>
+                                    </thead>
+
+                                    <!-- Invoices -->
+                                    <tbody id="invoiceTableBody">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+			</div>
+                        <div class="modal-footer">
+			    <button type="button" class="btn btn-secondary" onclick="window.print()">Print Invoice</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+	
+	
+	</div></div>
+
+    <!-- Needed for bootstrap -->
+    <!-- Popper.JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" ></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+
+
+    <!-- Collapse/Open Sidebar -->
+    <script type="text/javascript">
+var modalTableStr;
+	//Sets up web page by populating the flock
+	//dropdown menu and invoice table, as well
+	//as setting up the search for the invoice table
+        $(document).ready(function(){
+
+		var flock = "../flock/read.php";
+		$.getJSON(flock, function(flockData){
+			var flockStr = '';
+			$.each(flockData.records, function(key, val){
+				flockStr += '<option value="' + val.flock_id + '">' + val.farm_name + " - " + val.bird_desc + '</option>';
+			});
+			$('.trailerWeight').append(flockStr);
+		});
+		var invoice = "../invoice/getInvoices.php";
+		$.ajax({
+			type: 'get',
+			url: '../invoice/getInvoices.php',
+			data: {},
+			success: function(result){
+				var invoiceStr = '';
+				$.each(result, function(key, val){
+					invoiceStr += '<tr><td>' + val.invoice_id + '</td>';
+					invoiceStr += '<td>' + val.store_name + '</td>';
+					invoiceStr += '<td>' + val.invoice_date + '</td>';
+					invoiceStr += '<td><button class="btn btn-sm btn-outline-primary py=0" style="font-size: 0.8em;" type="button" onclick="showDetails(' + val.invoice_id + ', `' + val.invoice_date + '`, `' + val.store_name + '`)">View Details</button></td></tr>';
+				});
+				//alert(invoiceStr);
+				$('#shipmentListBody').append(invoiceStr);
+			}
+		});
+
+		$("#myInput").on("keyup", function() {
+            		var value = $(this).val().toLowerCase();
+            		$("#shipmentListBody tr").filter(function() {
+                		$(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            		});
+        	});
+
+        });
+
+	//Shows the pop-up for the invoice details
+	function showDetails(id, date, store){
+		document.getElementById("popupid").innerHTML = id;
+		document.getElementById("popupCustomer").innerHTML = store;
+		document.getElementById("popupDate").innerHTML = date;
+		setUpModalTable(id);
+		//$("#invoiceTableBody").empty();
+		//$("#invoiceTableBody").append(modalTableStr);
+		$("#shipmentModal").modal();
+	}
+
+	//Repopulates the modal to reflect
+	//the information in the invoice given by
+	//the id
+	function setUpModalTable(id){
+		$.post('../order/getById.php', { id: id}, function(orderData, success){
+			var tableStr = '';
+			$.each(orderData.records, function(key, val){
+				tableStr += '<tr><td>' + val.id + '</td><td>' + val.coops + '</td>';
+				tableStr += '<td>' + val.bird + '</td></tr>';
+			}, "json");
+			$("#invoiceTableBody").empty();
+			$("#invoiceTableBody").append(tableStr);
+		});
+	}
+
+        $(".numbers").on("keypress keyup blur", function(event) {
+        $(this).val($(this).val().replace(/[^\d].+/, ""));
+        if ((event.which < 48 || event.which > 57)) {
+            event.preventDefault();
+        }
+        });
+
+	//Submits the weights recorded to the database
+        function addWeight(flock_ID, weight_1, weight_2, num_coops, trailer_num, delivery_date) {
+
+        if (flock_ID !=='undefined' || weight_1 !=='undefined' || num_coops !== 'undefined' || trailer_num !== 'undefined' || delivery_date !== 'undefined'){
+		//alert(flock_ID + " " + weight_1 + " " + weight_2 + " " + num_coops + " " + trailer_num + " " + delivery_date);
+
+                $.ajax({
+                        type: "POST",
+                        url: "../order/submitWeights.php",
+                        data:{
+                            "flock_ID" : flock_ID,
+                            "weight_1" : weight_1,
+                            "weight_2" : weight_2,
+                            "num_coops" : num_coops,
+                            "trailer_num" : trailer_num,
+                            "delivery_date" : delivery_date,
+                        },
+                        success: function(response){
+                            //alert(response);
+                            console.log(flock_ID, weight_1, weight_2, num_coops, trailer_num, delivery_date);
+
+                        }
+                });
+        } else {
+                        alert('Please ensure a Bird is selected, the first weight is entered, the number of coops is entered, and the trailer number is entered.');
+                }
+        }   
+
+	//Checks if both weights fields have been
+	//used and calls addWeight appropriately
+        function submitWeight(){
+		//alert($('#trailerWeight').val());
+            if ($('#weight2').val() === null){
+                addWeight($('#trailerWeight').val(), $('#weight1').val(), 0, $('#numCoops').val(), $('#trailer').val(), $('#delvDate').val());
+            }
+            else {
+                addWeight($('#trailerWeight').val(), $('#weight1').val(), $('#weight2').val(), $('#numCoops').val(), $('#trailer').val(), $('#delvDate').val());
+            }
+	    window.location.reload();
+
+        }
+        
+function startup(){
+	loggedin();
+	checkPermissions("Sales Manager");
+}
+//Main author: ZM
+    </script>
+</body>
+</html>

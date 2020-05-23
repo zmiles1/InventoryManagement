@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+
+
+<head>
+
+    <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+
+    <title>Simply Fowl | Accounts Management</title>
+
+
+
+    <!-- Bootstrap CSS CDN -->
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Our Custom CSS -->
+
+    <link rel="stylesheet" href="style.css">
+
+
+
+    <!-- Font Awesome JS -->
+
+    <script src="https://kit.fontawesome.com/412b07d0f6.js" crossorigin="anonymous"></script>
+
+
+    <!--Cookies-->
+    <script src="docCookies.js"></script>
+    <script src="script.js"></script>
+</head>
+
+
+
+<body onload="startup()">
+
+<div class="wrapper">
+
+
+
+    <!-- Sidebar  -->
+
+    <div>
+
+        <nav id="sidebar" class="fixed">
+
+            <div class="sidebar-header"><h3 class="text-center">Simply Fowl</h3></div>
+
+
+
+            <ul class="list-unstyled components">
+
+                <li><a href="saleshomepage.html"><i class="fas fa-home fa-fw"></i> Home</a></li>
+
+                <li><a href="order.html"><i class="fas fa-box-open fa-fw"></i> Orders</a></li>
+
+                <li><a href="dispatch.html"><i class="fas fa-truck fa-fw"></i> Dispatch</a></li>
+
+                <li><a href="shipping.html"><i class="fas fa-briefcase fa-fw"></i> Shipments</a></li>
+
+                <li><a href="maintenance.html"><i class="fas fa-wrench fa-fw"></i> Maintenance</a></li>
+
+                <li class="active">
+
+                    <a href="#adminSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+
+                        <i class="fas fa-user-cog fa-fw"></i> Admin</a>
+
+                    <ul class="collapse list-unstyled" id="adminSubmenu">
+
+                        <li><a href="FlockManager.html">Flock Manager</a></li>
+
+			<li><a>Manage Accounts</a></li>
+
+                    </ul>
+
+                </li>
+	        <li><a href="changePassword.html"><i class="fas fa-cog fa-fw"></i> Change Password </a></li>
+            </ul>
+
+
+
+        </nav>
+
+    </div>
+
+
+
+
+
+    <!-- Accounts Management Page Content  -->
+
+    <div id="content" >
+
+        <!-- Page Header Navbar -->
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+
+            <div class="container-fluid">
+
+                <button type="button" id="sidebarCollapse" class="btn"><i class="fas fa-bars"></i></button>
+
+                <h4 class="nav navbar-nav navbar-center">Accounts Management</h4>
+
+                <ul class="nav navbar-nav navbar-right">
+
+                    <li><button type="button" class="btn btn-primary" onclick="logout()">Log Out</button></li>
+
+                </ul>
+
+            </div>
+
+        </nav>
+
+
+
+       
+
+
+
+        <!-- User List Card -->
+
+        <div id="userList" class="card mx-auto">
+
+            <div class="card-header">
+
+                <h5 class="card-title text-left">Existing Users</h5>
+
+                <div class="input-group mb-3">
+                        <input type="text" id="searchUsers" class="form-control" placeholder="Search User by Firstname or Lastname" aria-label="Search User" aria-describedby="searchUser">
+                        <select class="custom-select col-2" id="filter">
+                        <option disabled selected>Filter Users</option>
+                        <option value="0">View All</option>
+                        <option value="1">Active Users</option>
+                        <option value="2">Inactive Users</option>
+                        </select>                
+
+                </div>
+
+            </div>
+
+            <div class="card-body">
+
+                
+
+                <!-- Existing User List -->
+
+                <ul class="media-list">
+
+
+                    <!-- Temp List of Users-->
+
+                    <li class="list-group">
+
+                         <li class="list-group-item list-group-item-light">Select User</li>
+
+
+                        <div id="listofUsers" class="list-group">
+                            
+
+                        </div>
+
+                    </li>
+
+                   
+                </ul>
+
+            </div>
+
+            
+            <div class="card-footer">
+
+                <!--Add new user-->
+
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#AddUserModal">
+
+                    Add New User
+
+                </button>
+
+                <!--Edit selected User-->
+
+                <button id="editbutton" type="button" class="btn btn-primary" data-toggle="modal" data-target="#EditUserModal" disabled>
+
+                    Edit User
+
+                </button>
+
+                <!--Delete selected User-->
+
+                <button  id="deletebutton" type="button" class="btn btn-primary" data-toggle="modal" data-target="#DeleteUserModal" disabled>
+
+                    Delete User
+    
+                </button>
+                
+                
+
+                <!-- Add New User Modal -->
+
+                <div class="modal fade" id="AddUserModal" tabindex="-1" role="dialog" aria-labelledby="AddUserModal" aria-hidden="true">
+
+                    <div class="modal-dialog modal-lg" role="document">
+
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+
+                                <h5 class="modal-title" id="AddUserModalLabel">Add New User</h5>
+
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+
+                                    <span aria-hidden="true">&times;</span>
+
+                                </button>
+
+                            </div>
+
+                            <div class="modal-body">
+
+                                <form id="addform" action='#' method='post'>
+
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                          <label>First Name:</label>
+                                          <input type="text" id="firstname" name="firstname" class="form-control" placeholder="First name" required> 
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                          <label>Last Name:</label>
+                                          <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Last name" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                          <label>Username:</label>
+                                          <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label>Role</label>
+                                            <select id="permission" name="permission" class="custom-select mr-sm-2"> 
+                                                <option disabled selected>Options..</option>
+                                                <option value="Admin">Administrator</option>
+                                                <option value="Sales Manager">Sales Manager</option>
+                                                <option value="Flock Manager">Flock Manager</option>
+                                                <option value="Truck Driver">Truck Driver</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary" >Add</button>
+
+                                    <button type="reset" class="btn btn-secondary">Clear</button>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                
+                <!--Edit User Modal-->
+
+                <div class="modal fade" id="EditUserModal" tabindex="-1" role="dialog" aria-labelledby="EditUserModal" aria-hidden="true">
+                    
+                    <div class="modal-dialog modal-lg" role="document">
+                        
+                        <div class="modal-content">
+                           
+                            <div class="modal-header">
+                                
+                                <h5 class="modal-title" id="EditUserModalLabel">Edit User</h5>
+                                
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+
+                                    <span aria-hidden="true">&times;</span>
+
+                                </button>
+                           
+                            </div>
+                            
+                            <div class="modal-body">
+                                
+                                <form id="editform" action='#' method='post'>
+
+                                    <div class="form-row">
+                                       
+                                        <div class="form-group col-md-6">
+                                          
+                                            <label>First Name:</label>
+                                          
+                                            <input type="text" class="form-control" id="inputFirstName" value=" " required> 
+                                        
+                                        </div>
+                                       
+                                        <div class="form-group col-md-6">
+                                          
+                                            <label>Last Name:</label>
+                                          
+                                            <input type="text" class="form-control" id="inputLastName" value=" " required>
+                                        
+                                        </div>
+                                    
+                                    </div>
+                                    
+                                    <div class="form-row">
+                                        
+                                        <div class="form-group col-md-6">
+                                          
+                                            <label>Username</label>
+                                          
+                                            <input type="text" class="form-control" id="inputUsername" value=" " required>
+                                        
+                                        </div>
+                                        
+                                        <div class="form-group col-md-6">
+                                            
+                                            <label>Role</label>
+                                             <select id="inputRole" class="custom-select mr-sm-2">
+                                                <option disabled selected>Options..</option>
+                                                <option value="Admin">Admin</option>
+                                                <option value="Sales Manager">Sales Manager</option>
+                                                <option value="Flock Manager">Flock Manager</option>
+                                                <option value="Truck Driver">Truck Driver</option>
+                                            </select>
+
+         
+                                        </div>
+                                    
+                                    </div>
+                                    <div class="form-row">
+
+                                        <div class="form-group col-md-6">
+
+                                            <label>Status</label>
+                                             <select id="inputStatus" class="custom-select mr-sm-2">
+                                                <option disabled selected>Options..</option>
+                                                <option value="1">Active</option>
+                                                <option value="0">Inactive</option>
+                                            </select>
+
+                                        </div>
+
+                                    </div>   
+
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+
+                                </form>
+                            </div>
+                        
+                        </div>
+                    
+                    </div>
+               
+                </div>
+
+                <!--Delete User Modal-->
+
+                <div class="modal fade" id="DeleteUserModal" tabindex="-1" role="dialog" aria-labelledby="DeleteUserModal" aria-hidden="true">
+                       
+                    <div class="modal-dialog modal-lg" role="document">
+                            
+                        <div class="modal-content">
+                                
+                            <div class="modal-header">
+                                   
+                                <h5 class="modal-title" id="DeleteUserModalLabel">Delete User</h5>
+                                    
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    
+                                        <span aria-hidden="true">&times;</span>
+    
+                                </button>
+                                
+                            </div>
+                                
+                            <div class="modal-body">
+                                 
+                                <form>
+
+                                    <div class="form-row">
+                                       
+                                        <div class="form-group col-md-6">
+                                          
+                                            <label>First Name:</label>
+                                          
+                                            <input type="text" class="form-control" id="inputfirstname" disabled>
+                                        
+                                        </div>
+                                       
+                                        <div class="form-group col-md-6">
+                                          
+                                            <label>Last Name:</label>
+                                          
+                                            <input type="text" class="form-control" id="inputlastname" disabled>
+                                        
+                                        </div>
+                                    
+                                    </div>
+                                    
+                                    <div class="form-row">
+                                        
+                                        <div class="form-group col-md-6">
+                                          
+                                            <label>Username</label>
+                                          
+                                            <input type="text" class="form-control" id="inputusername" disabled>
+                                        
+                                        </div>
+                                        
+                                        <div class="form-group col-md-6"> 
+                                            
+                                            <label>Role</label>
+
+                                            <input type="text" class="form-control" id="inputrole" disabled>
+                                            
+                                        </div>
+                                    
+                                    </div>
+
+
+                                     <input type="hidden" class="form-control" id="inputuid"  disabled>
+                                    <button type="submit" class="btn btn-primary" onclick="deleteUser();">Delete</button>
+
+
+                                </form>
+                                    
+                            </div>
+
+                            
+                        </div>
+                       
+                    </div>
+                    
+                </div>
+                
+                
+            </div>
+
+        </div>
+
+
+
+        <!-- END OF INDIVIDUAL PAGE CONTENT -->
+
+
+
+
+
+    </div>
+
+</div>
+
+
+
+<!-- Needed for bootstrap -->
+
+<!-- Popper.JS -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+
+<!-- Bootstrap JS -->
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+
+
+
+
+
+<!-- Collapse/Open Sidebar -->
+
+<script type="text/javascript">
+/*
+Author: Riddhi Patel
+*/
+
+$(document).ready(function () {
+
+        //Collapes sidebar.
+        $('#sidebarCollapse').on('click', function () {
+
+            $('#sidebar').toggleClass('active')
+
+        });
+
+        //Allows to select a user. 
+        $('#listofUsers').on('click',function(){ 
+            $name = $(this)
+            $name.parent().find('input').removeClass('active');
+            $name.addClass('active');
+            if($name.hasClass('active')){
+                
+                $('#deletebutton').prop('disabled', false);
+                $('#editbutton').prop('disabled',false);
+            }
+        });
+
+        //Gets all the existig users. 
+        $.getJSON("../user/read_user.php", function (data) {
+            
+
+        var str = '';
+
+        $.each(data.data, function(key,val){
+            var firstname = val.firstname;
+            var lastname = '  ' + val.lastname;
+            var role =   val.role;
+            var fullname = firstname.concat(lastname,'   -   ',role);
+
+            str+=`<a href="#" id='` + val.userID + `' class="list-group-item list-group-item-action" data-toggle="list"
+                  onclick="populateForms(this.id);">` + fullname + `</a>`;
+        
+        });
+        $('#listofUsers').append(str);
+
+      });
+//Allows to search users. 
+$("#searchUsers").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#listofUsers").parent().find('a').filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+
+
+
+
+});
+
+
+
+    
+//Gets user information by userID and populates edit and delete forms. 
+function populateForms(uid){
+        $.ajax({
+                type: "GET",
+                url: "../user/read_userbyID.php",
+                data:{
+                        user_ID : uid
+                },
+                success: function(response){
+
+                    //edit form input fields
+                    $('#inputFirstName').val(response.firstname);
+                    $('#inputLastName').val(response.lastname);
+                    $('#inputUsername').val(response.username);
+                    $('#inputStatus').val(response.status);
+                    $('#inputRole').val(response.role);
+                   
+                    //delete form input fields
+                    $('#inputfirstname').val(response.firstname);
+                    $('#inputlastname').val(response.lastname);
+                    $('#inputusername').val(response.username);
+                    $('#inputrole').val(response.role);
+                    $('#inputuid').val(response.user_ID);
+
+                },
+                error: function(response){
+                        console.log(response);
+                }
+                
+        });
+}
+
+
+//Gets users based on the status. 
+$(document).on('change', '#filter', function(){
+//selected id of the option(active or inactive)
+var id = $(this).val();
+$.getJSON("../user/read_userbystat.php?id="+ id, function (data) {
+
+        
+        var str = '';
+
+        $.each(data.data, function(key,val){
+            var firstname = val.firstname;
+            var lastname = '  ' + val.lastname;
+            var role =  val.role;
+            var fullname = firstname.concat(lastname, '  -  ', role);
+            
+           // var status = val.status;
+            str+=`<a href="#" id='` + val.user_ID + `' class="list-group-item list-group-item-action" data-toggle="list"
+                  onclick="populateForms(this.id);">` + fullname + `</a>`;
+        });
+        $('#listofUsers').empty().append(str);
+
+        });
+
+});
+
+
+//deletes selected user.
+function deleteUser(){
+//user ID of the user being deleted.
+var uid =  $('#inputuid').val();
+        $.ajax({
+                url : "../user/delete_user.php",
+                type : "POST",
+                data : {
+                        userid : uid
+                },
+                success : function(result) {
+                         window.location.reload();
+                },
+                error : function(xhr, resp, text){
+                        console.log(xhr,resp, text);
+                }
+        });
+}
+
+//Serializes objects so it can get converted into JSON.
+$.fn.serializeObject = function()
+{
+    var o = {};
+    var a = this.serializeArray();
+    $.each(a, function() {
+        if (o[this.name] !== undefined) {
+            if (!o[this.name].push) {
+                o[this.name] = [o[this.name]];
+            }
+            o[this.name].push(this.value || '');
+        } else {
+            o[this.name] = this.value || '';
+        }
+    });
+    return o;
+};
+
+//add user
+$(document).on('submit', '#addform', function(){
+        var form_data=JSON.stringify($(this).serializeObject());
+        $.ajax({
+                url : "../user/create_user.php",
+                type : "POST",
+                contentType : 'application/json',
+                data : form_data,
+                success : function(result) {
+                        var response = result.message;
+                        window.location.reload();
+                },
+                error : function(xhr, resp, text){
+                        console.log(xhr,resp, text);
+                }
+        });
+        return false;
+ });
+
+//update user
+$( "#editform" ).submit(function( event ) {
+    var user_id = $('#inputuid').val();
+    var firstname =  $('#inputFirstName').val();
+    var lastname =  $('#inputLastName').val();
+    var username =  $('#inputUsername').val();
+    var role =  $('#inputRole').val();
+    var activestat =  $('#inputStatus').val();
+
+    var obj = {userid: user_id, firstName: firstname,
+                lastName: lastname, permission: role,
+                userName: username,activestatus: activestat
+              }
+
+    var editform_data=JSON.stringify(obj);
+
+    $.ajax({
+                url : "../user/update_userinfo.php",
+                type : "POST",
+                data : editform_data,
+                success : function(result) {
+                        window.location.reload();
+                },
+                error : function(xhr, resp, text){
+                        console.log(xhr,resp, text);
+                }
+    });
+
+});
+
+//checks permissoin for sales manager. 
+function startup(){
+    loggedin();
+    checkPermissions("Sales Manager");
+}
+</script>
+
+
+
+
+
+
+
+</body>
+
+
+
+</html>

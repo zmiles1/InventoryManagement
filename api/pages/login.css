@@ -1,0 +1,10 @@
+h1{
+    color: #451104;
+}
+.btn{
+    background-color: #451104;
+    color: white;
+}
+.btn:hover{
+    color: #d9d9d9;
+}

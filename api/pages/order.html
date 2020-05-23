@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+    <script src='docCookies.js'></script>
+    <script src='script.js'></script>
+    <script src='main.js'></script>
+
+    <title>Simply Fowl | Order Page</title>
+
+    <!-- Bootstrap CSS CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- Our Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Font Awesome JS -->
+    <script src="https://kit.fontawesome.com/412b07d0f6.js" crossorigin="anonymous"></script>
+    
+    <!--Cookies -->
+    <script src="docCookies.js"></script>
+    <script src="script.js"></script>
+
+</head>
+
+<body onload="startup()">
+<div class="wrapper">
+
+    <!-- Sidebar  -->
+    <div>
+        <nav id="sidebar" class="fixed">
+            <div class="sidebar-header"><h3 class="text-center">Simply Fowl</h3></div>
+
+            <ul class="list-unstyled components">
+                <li><a href="saleshomepage.html"><i class="fas fa-home fa-fw"></i> Home</a></li>
+                <li class="active"><a><i class="fas fa-box-open fa-fw"></i> Orders</a></li>
+                <li><a href="dispatch.html"><i class="fas fa-truck fa-fw"></i> Dispatch</a></li>
+                <li><a href="shipping.html"><i class="fas fa-briefcase fa-fw"></i> Shipments</a></li>
+                <li><a href="maintenance.html"><i class="fas fa-wrench fa-fw"></i> Maintenance</a></li>
+                <li id="adminsub">
+                    <a href="#adminSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                        <i class="fas fa-user-cog fa-fw"></i> Admin</a>
+                    <ul class="collapse list-unstyled" id="adminSubmenu">
+                        <li><a href="FlockManager.html">Flock Manager</a></li>
+                        <li><a href="accountsmanagement.html">Manage Accounts</a></li>
+                    </ul>
+                </li>
+	    <li><a href="changePassword.html"><i class="fas fa-cog fa-fw"></i> Change Password </a></li>
+            </ul>
+
+        </nav>
+    </div>
+
+
+    <!-- Page Content  -->
+    <div id="content" >
+        <!-- Page Header Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <button type="button" id="sidebarCollapse" class="btn"><i class="fas fa-bars"></i></button>
+                <h4 class="nav navbar-nav navbar-center">Orders</h4>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><button type="button" class="btn btn-primary" onclick="logout()">Log Out</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Individual Page Content Goes Here -->
+
+	<!-- Create New Order Form -->
+        <div class="card mx-auto">
+            <div class="card-body">
+                <form>
+                    <h3>Create New Order</h3>
+                    <div id="form-group-1">
+			<select class="store" id="storeList">
+				<option value="-1" disabled selected hidden>Choose Customer</option>
+			</select>
+			<input type="date" id="deldate" placeholder="Date MM-DD-YY">
+			<br>
+			<input type="text" class="numcoops" id="numcoops" placeholder="Number of Coops">
+		        	
+			<select class="bird1" id="bird1" placeholder="Select Flock">
+				<option value="-1" disabled selected hidden>Choose Flock</option>	
+			</select>
+	
+			<button id="addMoreFields" class="btn btn-primary btn-sm" type="button" onclick="addOrderLine()">+</button>
+		    </div>
+		    <div id="form-group-2">
+			    <input type="text" id="numcoops2" placeholder="Number of Coops">
+
+                        <select class="bird2" id="bird2">
+				<option value="-1" disabled selected hidden>Choose Flock</option>
+                        </select>
+		    </div>
+		    <div id="form-group-3">
+			    <input type="text" id="numcoops3" placeholder="Number of Coops">
+
+                        <select class="bird3" id="bird3">
+                                <option value="-1" disabled selected hidden>Choose Flock</option> 
+                        </select>
+		    </div>
+		    <div id="form-group-4">
+			    <input type="text" id="numcoops4" placeholder="Number of Coops">
+
+                        <select class="bird4" id="bird4">
+				<option value="-1" disabled selected hidden>Choose Flock</option> 
+                        </select>
+		    </div>
+		    <div id="form-group-5">
+			    <input type="text" id="numcoops5" placeholder="Number of Coops">
+
+                        <select class="bird5" id="bird5">
+				<option value="-1" disabled selected hidden>Choose Flock</option>
+                        </select>
+		    </div>
+		    <div id="form-group-6">
+			    <input type="text" id="numcoops6" placeholder="Number of Coops">
+
+                        <select class="bird6" id="bird6">
+				<option value="-1" disabled selected hidden>Choose Flock</option>
+                        </select>
+		    </div>
+		    <div id="form-group-7">
+			    <input type="text" id="numcoops7" placeholder="Number of Coops">
+
+                        <select class="bird7" id="bird7">
+				<option value="-1" disabled selected hidden>Choose Flock</option>
+                        </select>
+		    </div>
+		    <div id="form-group-8">
+			    <input type="text" id="numcoops8" placeholder="Number of Coops">
+
+                        <select class="bird8" id="bird8">
+				<option value="-1" disabled selected hidden>Choose Flock</option>
+                        </select>
+		    </div>
+
+
+
+                    
+                    <button id="submit-order" class="btn btn-primary" type="button" onclick="submitOrder()">Create</button>
+                </form>
+
+            </div>
+        </div>
+
+	<br>
+
+	<!-- Table of Existing Orders -->
+	<div class="card mx-auto">
+		<div class="card-body">
+			<h3>Order Search</h3>
+			<input class="form-control" id="myInput" type="text" placeholder="Search by Store or Date">
+			<br>
+			<div class="table-responsive">
+			<table id="orderTable" class="table table-bordered table-hover">
+				<thead>
+					<tr>
+						<th>Store</th>
+						<th># Coops</th>
+						<th>Bird</th>
+						<th>Date</th>
+						<th>Remove</th>
+					<tr>
+				</thead>
+				<tbody id="ordertable">
+				</tbody>
+			</table>
+			</div>
+		</div>
+	</div>
+
+        <!-- END OF INDIVIDUAL PAGE CONTENT -->
+
+
+    </div>
+</div>
+
+<!-- Needed for bootstrap -->
+<!-- Popper.JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+<!-- BootBox -->
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></script>-->
+
+<script>
+var id;
+/*Function to set up the order page
+by populating the dropdown menus in
+the create new orders form as well
+as populating the table on the page
+and setting up the search bar*/
+$(document).ready(function() {
+	
+	var store = "../store/getStores.php";
+        var bird = "../bird/selectBird.php";
+        var order = "../order/getCurrentOrders.php";
+        $.getJSON(store,function(storeData){
+		 var storeStr = '';
+                 $.each(storeData.records, function(key,val){
+                         storeStr+='<option value="' + val.store_id + '">' + val.store_name + '</option>';
+                 });
+		$('.store').append(storeStr);
+                $.getJSON(bird,function(birdData){
+                        var birdStr = '';
+                        $.each(birdData.records, function(key,val){
+                                birdStr+='<option value="' + val.flock_id + '">' + val.farm_name + " - " + val.bird_desc + '</option>';
+                        });
+                        $('.bird1').append(birdStr);
+                        $('.bird2').append(birdStr);
+                        $('.bird3').append(birdStr);
+                        $('.bird4').append(birdStr);
+                        $('.bird5').append(birdStr);
+                        $('.bird6').append(birdStr);
+                        $('.bird7').append(birdStr);
+                        $('.bird8').append(birdStr);
+                        $.getJSON(order,function(orderData){
+                                var orderStr = '';
+                                $.each(orderData.records, function(key,val) {
+                                        orderStr+='<tr><td>' + val.store + '</td>';
+                                        orderStr+='<td>' + val.coops + '</td>';
+                                        orderStr+='<td>' + val.bird + '</td>';
+                                        orderStr+='<td>' + val.date + '</td>';
+                                        orderStr+= '<td class="text-center"><button class="btn btn-sm btn-outline-primary py-0" style="font-size: 0.8em;" type="button" onclick="removeOrder(' + val.id + ')">Remove #' + val.id + '</button></td></tr>';
+                                });
+                                $('#ordertable').append(orderStr);
+                        });
+                });
+        });
+
+	hideAll();
+
+	getRecentID();
+
+	$("#myInput").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#ordertable tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+});
+
+function hideAll(){
+        document.getElementById("form-group-2").style.display = "none";
+        document.getElementById("form-group-3").style.display = "none";
+        document.getElementById("form-group-4").style.display = "none";
+        document.getElementById("form-group-5").style.display = "none";
+        document.getElementById("form-group-6").style.display = "none";
+        document.getElementById("form-group-7").style.display = "none";
+        document.getElementById("form-group-8").style.display = "none";
+}
+
+//This function is used whenever the plus button is hit, it reveals
+//another set of input fields for an extra order
+function addOrderLine(){
+        if(document.getElementById("form-group-2").style.display == "none"){
+                document.getElementById("form-group-2").style.display = "block";
+        }
+        else if(document.getElementById("form-group-3").style.display == "none"){
+                document.getElementById("form-group-3").style.display = "block";
+        }
+        else if(document.getElementById("form-group-4").style.display == "none"){
+                document.getElementById("form-group-4").style.display = "block";
+        }
+        else if(document.getElementById("form-group-5").style.display == "none"){
+                document.getElementById("form-group-5").style.display = "block";
+        }
+        else if(document.getElementById("form-group-6").style.display == "none"){
+                document.getElementById("form-group-6").style.display = "block";
+        }
+        else if(document.getElementById("form-group-7").style.display == "none"){
+                document.getElementById("form-group-7").style.display = "block";
+        }
+        else if(document.getElementById("form-group-8").style.display == "none"){
+                document.getElementById("form-group-8").style.display = "block";
+        }
+        else {
+                alert("No further orders can be added");
+        }
+}
+
+//Returns an invoice id to be used in newly created orders
+function getRecentID(){
+	$.ajax({
+		type: "GET",
+		url: "../invoice/getNewID.php",
+		data: {},
+		success: function(response){
+			id = parseInt(response.invoice_id) + 1;
+		}
+	});
+}
+
+//Checks each set of order fields on the webpage
+//in order, and creates a new order for each
+//set of filled in input fields on the create
+//new orders form until empty input fields are reached
+function submitOrder(){
+	if($('#storeList').val() > -1 && $('#deldate').val() != "" && $('#numcoops').val() != "" && $('#bird1').val() > -1){
+		addInvoice($('#storeList').val(), $('#deldate').val());
+                addOrder($('#storeList').val(), $('#deldate').val(), $('#numcoops').val(), $('#bird1').val(), id);
+		if(document.getElementById("form-group-2").style.display != "none" && $('#numcoops2').val() != ""){
+                        addOrder($('#storeList').val(), $('#deldate').val(), $('#numcoops2').val(), $('#bird2').val(), id);
+			if(document.getElementById("form-group-3").style.display != "none" && $('#numcoops3').val() != ""){
+                                addOrder($('#storeList').val(), $('#deldate').val(), $('#numcoops3').val(), $('#bird3').val(), id);
+				if(document.getElementById("form-group-4").style.display != "none" && $('#numcoops4').val() != ""){
+                                        addOrder($('#storeList').val(), $('#deldate').val(), $('#numcoops4').val(), $('#bird4').val(), id);
+					if(document.getElementById("form-group-5").style.display != "none" && $('#numcoops5').val() != ""){
+                                                addOrder($('#storeList').val(), $('#deldate').val(), $('#numcoops5').val(), $('#bird5').val(), id);
+						if(document.getElementById("form-group-6").style.display != "none" && $('#numcoops6').val() != "") {
+                                                        addOrder($('#storeList').val(), $('#deldate').val(), $('#numcoops6').val(), $('#bird6').val(), id);
+							if(document.getElementById("form-group-7").style.display != "none" && $('#numcoops7').val() != "") {
+                                                                addOrder($('#storeList').val(), $('#deldate').val(), $('#numcoops7').val(), $('#bird7').val(), id);
+								if(document.getElementById("form-group-8").style.display != "none" && $('#numcoops8').val() != "") {
+                                                                        addOrder($('#storeList').val(), $('#deldate').val(), $('#numcoops8').val(), $('#bird8').val(), id);
+                                                                }
+                                                        }
+                                                }
+                                        }
+                                }
+                        }
+                }
+                alert("The new order has been added");
+                window.location.reload();
+        }
+        else{
+                alert("Invalid or missing date and number of coops.");
+        }
+}
+
+//Ajax call to add a single new order to the database
+function addOrder(storeid, deldate, numcoops, flockid, invoiceid){
+        //ajax code
+        $.ajax({
+        type: "post",
+        url: "../order/insertOrder.php", //php file goes here
+        data:{
+            "storeid":storeid,
+            "deldate":deldate,
+            "numcoops":numcoops,
+            "flockid":flockid,
+	    "invoiceid":invoiceid
+        },
+        success: function(response){
+            alert(response);
+        },
+        failure: function(response){
+            alert("fdjksalfjkdas");
+        }
+    });
+}
+
+//Adds a new invoice to the database
+function addInvoice(storeid, deldate){
+	$.ajax({
+		type: "post",
+		url: "../invoice/addInvoice.php",
+		data:{
+			"storeid":storeid,
+			"deldate":deldate
+		},
+		success: function(response){
+			alert(response);
+		}
+	});
+}
+
+//Removes an order from the database
+function removeOrder(id){
+        //alert("If this worked, order " + id + " would be removed.");
+        $.ajax({
+                type: "post",
+                url: "../order/removeOrder.php",
+                data:{
+                        "id":id
+                },
+                success: function(response){
+                        //alert(response);
+                }
+        });
+        alert("Removed order # " + id);
+        window.location.reload();
+}
+
+function startup(){
+	loggedin();
+	checkPermissions("Sales Manager");
+}
+//Main author: ZM
+</script>
+
+</body>
+
+</html>
+

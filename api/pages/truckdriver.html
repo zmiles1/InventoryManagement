@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+
+    <title>Simply Fowl | Truck Driver</title>
+
+    <!-- Bootstrap CSS CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- Our Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome JS -->
+    <script src="https://kit.fontawesome.com/412b07d0f6.js" crossorigin="anonymous"></script>
+    
+    <!--Cookies-->
+    <script src="docCookies.js"></script>
+    <script src="script.js"></script>
+</head>
+
+<body onload="startup()">
+<div class="wrapper">
+
+    <!-- Sidebar  -->
+    <div>
+        <nav id="sidebar" class="fixed truckDriver">
+            <div class="sidebar-header"><h3 class="text-center">Simply Fowl</h3></div>
+            <ul class="list-unstyled components">
+                <li class="active"><a><i class="fas fa-home fa-fw"></i> Home</a></li>
+	        <li><a href="changePassword.html"><i class="fas fa-cog fa-fw"></i> Change Password </a></li>
+            </ul>
+        </nav>
+    </div>
+
+
+    <!-- Page Content  -->
+    <div id="content" >
+        <!-- Page Header Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <button type="button" id="sidebarCollapse" class="btn"><i class="fas fa-bars"></i></button>
+                <h4 class="nav navbar-nav navbar-center">Truck Driver</h4>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><button type="button" class="btn btn-primary" onclick="logout()">Log Out</button></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Individual Page Content Goes Here -->
+
+        <!-- Announcements Card -->
+        <div id="truckAnnouncements" class="card mx-auto">
+            <div class="card-header">
+                <h4 class="card-title text-center">Announcements</h4>
+            </div>
+            <div class="card-body"  id="announcementsTD" >
+                <!-- Comment List -->
+            </div>
+        </div>
+
+        <br>
+        <br>
+
+        <!-- Deliveries Card -->
+        <div id="deliveries" class="card mx-auto">
+            <div class="card-header">
+                <h4 class="card-title text-center">Deliveries</h4>
+            </div>
+            <div class="card-body">
+
+                <!-- List of Invoices in Route assigned to truck driver -->
+                <div id="deliveriesList" class="list-group">
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="invoiceModal" tabindex="-1" role="dialog" aria-labelledby="invoiceModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="invoiceModalLabel">Delivery Details</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+
+                            <!-- Individual Order Details will be filled in here -->
+                            <div id="orderPopup" class="modal-body">
+                                <h5>Delivery Number:</h5>
+                                <p id="popupInvoiceNum"></p>
+                                <hr>
+                                <h5>Ordered By:</h5>
+                                <p id="popupInvoiceStoreName"></p>
+                                <p id="popupInvoiceAddress"></p>
+                                <p id="popupInvoiceDate"></p>
+                                <hr>
+
+                                <!-- Table for Orders in Invoice -->
+                                <h5>Order Details</h5>
+                                <div class="table-responsive" id="invoiceOrderTable">
+                                    <table class="table table-bordered table-hover" >
+                                        <thead>
+                                        <tr>
+                                            <th>Bird Type</th>
+                                            <th>Coops</th>
+                                        </tr>
+                                        </thead>
+
+                                        <!-- Orders -->
+                                        <tbody id="invoiceOrderTableBody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END OF INDIVIDUAL PAGE CONTENT -->
+    </div>
+</div>
+
+<!-- Needed for bootstrap -->
+<!-- Popper.JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+
+<script type="text/javascript">
+/*
+Authors: Riddhi Patel,Joe Tagliaferro
+*/
+
+//ID of the currently logged in truck driver.
+var truckdriverID = docCookies.getItem("userid");
+
+    $(document).ready(function () {
+        $('#sidebarCollapse').on('click', function () {
+            $('#sidebar').toggleClass('active')
+        });
+
+         //Gets all the sent messages for today.
+         $.getJSON("../message/readforTD.php", function (data) {
+            
+            var messagestrTD = '<ul class="media-list">';
+
+            $.each(data.records, function(key,val){
+            var message = val.content;
+            var date_time = val.date_created;
+            var name =   val.name;
+      
+            messagestrTD += `<li class="media">   
+                            <div class="media-body">
+                            <strong class="text-primary">`+ name +`</strong>
+                            <small class="text-muted">` + date_time + `</small>
+                            <p>` + message + `</p>
+                        </div></li>`;
+             
+           });
+          $('#announcementsTD').prepend(messagestrTD);
+       });
+	
+        //gets all deliveries for today. 
+        $.getJSON("../delivery/getDeliveriesforTD.php?user_id="+truckdriverID, function (data) {
+
+             var deliveryStr = "";
+
+            $.each(data.records, function(key,val){
+               var deliveryNum = val.delivery_id;
+
+            deliveryStr = `<button type="button" class="list-group-item list-group-item-action" data-toggle="modal" data-target="#invoiceModal" 
+            id='` + deliveryNum + `' onclick="populatePopup(this.id)">Delivery Number - ` + deliveryNum + ` </button>`;
+           $('#deliveriesList').append(deliveryStr);
+
+           });
+
+       });
+
+
+
+ });
+
+    // Change Modal Information based on delivery that was clicked
+    function populatePopup(deliveryIndex)
+    {
+        document.getElementById("popupInvoiceNum").innerHTML = deliveryIndex;
+        
+          $.getJSON("../delivery/getDeliveryStore.php?delivery_ID="+deliveryIndex, function (data) {
+
+            document.getElementById("popupInvoiceStoreName").innerHTML = "Store Name: " + data.store_name;
+            document.getElementById("popupInvoiceAddress").innerHTML = "Address: " + data.store_address;
+            document.getElementById("popupInvoiceDate").innerHTML = "Date: " + data.delivery_date;
+
+           });
+
+
+
+	// Clear Table Body
+        document.getElementById("invoiceOrderTableBody").innerHTML = "";
+
+	// populate table with order info from order's with same invoice_id
+        $.getJSON("../delivery/getDeliveryDetails.php?delivery_ID="+deliveryIndex, function (data) {
+
+             var deliveryStr = "";
+
+            $.each(data.records, function(key,val){
+
+            orderRow = `<tr><td>`+ val.bird_desc +`</td><td>`+ val.number_coops +`</td></tr>`;
+            $('#invoiceOrderTableBody').append(orderRow);
+
+           });
+
+       });
+
+
+
+    }
+
+
+
+</script>
+</body>
+<script type="text/javascript">
+    //checks permission for truck driver.
+    function startup(){
+	loggedin();
+	checkPermissions("Truck Driver");
+    }
+</script>
+</html>

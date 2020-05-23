@@ -1,0 +1,43 @@
+<html>
+<head>
+          <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+  <script src="docCookies.js"></script>
+  <script src="script.js"></script>
+</head>
+<body onload="trucks()">
+  <p id="userid"></p>
+  <p id="username"></p>
+  <p id="firstname"></p>
+  <p id="lastname"></p>
+  <p id="permission"></p>
+  <button onclick="logout()">Logout</button>
+  <button onclick="trucks()">Trucks</button>
+  <select id="truck" name="truck"></select>
+</body>
+  <script language="javascript">
+    document.getElementById("userid").innerHTML = docCookies.getItem("userid");
+    document.getElementById("username").innerHTML = docCookies.getItem("username");
+    document.getElementById("firstname").innerHTML = docCookies.getItem("firstname");
+    document.getElementById("lastname").innerHTML = docCookies.getItem("lastname");
+    document.getElementById("permission").innerHTML = docCookies.getItem("permission");
+
+    function trucks(){
+	$.ajax({
+	    type: 'post',
+	    url: '../truck/get_trucks.php',
+	    data: {},
+	    success: function(result){
+		alert(result.length);
+		var select = document.getElementById("truck");
+		for(var i = 0; i < result.length; i++){
+		    var option = document.createElement('option');
+		    option.text = result[i].truck_number;
+		    option.value = result[i].truck_id;
+		    select.add(option, i);
+		}
+	    }
+	});
+    }
+  </script>
+</html>
